@@ -46,3 +46,4 @@ void Initialize(HWND hWnd);
 void CreateBrushes();
 HWND CreateTabDisplayWindow(HWND hwndTab, HINSTANCE hInstance, char * pcClassName, WNDPROC wProc);
 ATOM RegisterSomeClass(HINSTANCE hInstance, char * className, WNDPROC proc);
+HTREEITEM AddItemToTree(HWND hwndTV, LPTSTR lpszItem, HTREEITEM hParent, int num);

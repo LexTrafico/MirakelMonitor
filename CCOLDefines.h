@@ -268,4 +268,6 @@ extern short FC_MAX;
 #define _CG_MG  5
 #define _CG_GL  6
 #define _CG_RV  7
+#define _CG_NO  7
+#define _CG_BG  7
 #define _CG_MAX 8   

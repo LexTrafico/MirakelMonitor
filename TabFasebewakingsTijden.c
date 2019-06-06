@@ -1,5 +1,7 @@
 #include "TabFasebewakingsTijden.h"
 
+static HFONT hFont;
+
 LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	RECT rect;
@@ -17,6 +19,9 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 		TabWachttijdenReset();
 		strTFBContent.iShowFasestat = -1;
 
+		// Set tab text font
+		hFont = CreateFont(16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Arial");
+		
 		/* Aanmaken en toewijzen tooltip per fase in de monitor */
 		for (int fc = 0; fc < FC_MAX; ++fc)
 		{
@@ -35,7 +40,7 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 			/* Set window positie */
 			SetWindowPos(strTFBContent.hwndTip[fc], HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 			/* Instellen initiele tekst weergave */
-			sprintf_s(lpszTemp1, SZBUFFERSIZE, "FC%s: nog niets...", FC_code[fc]);
+			sprintf_s(lpszTemp1, SZBUFFERSIZE, "FC%s: geen data", FC_code[fc]);
 			/* Instellen tooltip parameters: tekst en bijbehorende rectangle */
 			strTFBContent.ti[fc].lpszText = lpszTemp1;
 			strTFBContent.ti[fc].rect.left = fc * 20 + iCharWidth * 3 + iTFBLeft;
@@ -74,10 +79,13 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 		{
 			/* Weergeven schaal indicatie */
 			SetTextColor(ps.hdc, RGB(0, 0, 0));
+			SetBkMode(ps.hdc, TRANSPARENT);
+			SelectObject(ps.hdc, hFont);
 			TextOut(ps.hdc, iTFBLeft, iTFBBottom - iCharHeight * 3 - 10, "  0", 3);
 			TextOut(ps.hdc, iTFBLeft, iTFBBottom - iCharHeight * 3 - 110, "100", 3);
 			TextOut(ps.hdc, iTFBLeft, iTFBBottom - iCharHeight * 3 - 210, "200", 3);
 			TextOut(ps.hdc, iTFBLeft, iTFBBottom - iCharHeight * 3 - 310, "300", 3);
+			SetBkMode(ps.hdc, OPAQUE);
 			SelectObject(ps.hdc, hPenMirakel[BRUSH_LIGHTGRAY]);
 			MoveToEx(ps.hdc, iCharWidth * 4 + iTFBLeft, iTFBBottom - iCharHeight * 3, NULL);
 			LineTo(ps.hdc, 20 * FC_MAX + iCharWidth * 4 + iTFBLeft, iTFBBottom - iCharHeight * 3);
@@ -94,7 +102,9 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 				if (strTFBContent.iShowFasestat < 0) strTFBContent.iShowFasestat = 0;
 				if (strTFBContent.iShowFasestat >= FC_MAX) strTFBContent.iShowFasestat = FC_MAX - 1;
 				status_phasecycles(strTFBContent.lpszFasestat, strTFBContent.iShowFasestat, 0);
+				SetBkMode(ps.hdc, TRANSPARENT);
 				TextOut(ps.hdc, iTFBLeft, iTFBBottom - iCharHeight, strTFBContent.lpszFasestat, strlen(strTFBContent.lpszFasestat));
+				SetBkMode(ps.hdc, OPAQUE);
 			}
 
 			for (fcl = 0; fcl < FC_MAX; ++fcl)
@@ -133,7 +143,9 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 					SetTextColor(ps.hdc, greenartext);
 				else
 					SetTextColor(ps.hdc, redtext);
+				SetBkMode(ps.hdc, TRANSPARENT);
 				TextOut(ps.hdc, fcl * 20 + iCharWidth * 4 + iTFBLeft, iTFBBottom - iCharHeight * 3, FC_code[fcl], strlen(FC_code[fcl]));
+				SetBkMode(ps.hdc, OPAQUE);
 
 				/* FC Status */
 				SelectObject(ps.hdc, hPenMirakel[BRUSH_GRAY]);

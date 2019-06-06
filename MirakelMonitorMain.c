@@ -21,18 +21,23 @@ HWND CreateMainTabControl(HWND hwndParent, HINSTANCE hInst)
 	TCITEM tie;
 	int i;
 	TCHAR achTemp[256];  // Temporary buffer for strings.
+	HFONT hTabFont;
 
 	// Get the dimensions of the parent window's client area, and 
 	// create a tab control child window of that size.
 	GetClientRect(hwndParent, &rcClient);
-	hwndTab = CreateWindow(WC_TABCONTROL, "",
-		WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
+	hwndTab = CreateWindow(WC_TABCONTROL, "MirakelMainTab",
+		WS_CHILD | WS_VISIBLE | TCS_FLATBUTTONS | TCS_BUTTONS | WS_CLIPSIBLINGS | WS_VISIBLE,
 		0, 0, rcClient.right, rcClient.bottom,
 		hwndParent, NULL, hInst, NULL);
 	if (hwndTab == NULL)
 	{
 		return NULL;
 	}
+
+	// Set tab text font
+	hTabFont = CreateFont(13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Arial");
+	SendMessage(hwndTab, WM_SETFONT, (WPARAM)hTabFont, (LPARAM)TRUE);
 
 	// Add tabs for each day of the week. 
 	tie.mask = TCIF_TEXT | TCIF_IMAGE;
@@ -78,14 +83,9 @@ BOOL NotifyMainTab(LPARAM lParam)
 {
 	switch (((LPNMHDR)lParam)->code)
 	{
-	case TCN_SELCHANGING:
-		// Return FALSE to allow the selection to change.
-		return FALSE;
-
 	case TCN_SELCHANGE:
 	{
 		int iPage = TabCtrl_GetCurSel(hMainTab);
-
 		for (int i = 0; i < TAB_MAX; i++)
 		{
 			if (i == iPage) ShowWindow(hTabs[i], SW_SHOW);
@@ -116,10 +116,10 @@ ATOM RegisterMirakelMonitorClass(HINSTANCE hInstance)
 	wcc.cbClsExtra = 0;
 	wcc.cbWndExtra = 0;
 	wcc.hInstance = hInstance;
-	wcc.hIcon = NULL; // LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MIR));
+	wcc.hIcon = NULL;
 	wcc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcc.hbrBackground = NULL; //backgroundcol;
-	wcc.lpszMenuName = NULL;// MAKEINTRESOURCE(IDR_MIRAKEL_MENU);
+	wcc.hbrBackground = NULL;
+	wcc.lpszMenuName = NULL;
 	wcc.lpszClassName = "MirakelMonitorClass";
 
 	return RegisterClass(&wcc);
@@ -129,6 +129,13 @@ int MirakelMonitor_init(char * lpWindowName)
 {
 	// Register the window class.
 	const char CLASS_NAME[] = "MirakelMonitorClass";
+
+	// allocate memory
+	Controller = (CONTROLLERSTRUCT *)malloc(sizeof(CONTROLLERSTRUCT));
+
+	Controller->lpWindowName = (char *)malloc((strlen(lpWindowName) + 1) * sizeof(char));
+	int ii = (strlen(lpWindowName) + 1);
+	strcpy_s((char *)Controller->lpWindowName, strlen(lpWindowName) + 1, lpWindowName);
 
 	WNDCLASS wc;
 	DWORD dwStyle;
@@ -201,7 +208,60 @@ void MirakelMonitor()
 	RECT rect;
 
 	TabWachttijdenUpdate();
+	fasenlog_update(Controller);
 
 	GetClientRect(hMainWin, &rect);
 	InvalidateRect(hMainWin, &rect, TRUE);
+}
+
+// Function to get time from controller
+unsigned long CALLBACK MirGetCTTime(void)
+{
+	unsigned long tm;
+	static int te = 0;
+
+	if (TE) te += TE;
+	if (TS) te = 0;
+
+	tm = (((CIF_KLOK[CIF_UUR] & 0xff) << 24) +
+		((CIF_KLOK[CIF_MINUUT] & 0xff) << 16) +
+		((CIF_KLOK[CIF_SECONDE] & 0xff) << 8) +
+		(te & 0xff));
+
+	return tm;
+}
+
+// Function to retrieve FC state from controller
+struct fasenlogentry * CALLBACK MirGetCCOLFCState(short fc)
+{
+	static struct fasenlogentry fle;
+	static int te;
+
+	if (TE) te = ++te % 10;
+	if (TS) te = 0;
+
+	fle.state = CG[fc];
+	fle.aanvr = A[fc];
+	fle.ar = AR[fc];
+
+	return &fle;
+}
+
+// Function to _code for CCOL element
+const LPCSTR CALLBACK MirGiveCCOLString(short type, short elem)
+{
+	switch (type)
+	{
+	case TYPE_FC:	return FC_code[elem];
+	case TYPE_DP:   return D_code[elem];
+	case TYPE_SCH:	return SCH_code[elem];
+	case TYPE_PRM:	return PRM_code[elem];
+	case TYPE_TM:	return T_code[elem];
+	case TYPE_IS:	return IS_code[elem];
+	case TYPE_US:	return US_code[elem];
+	case TYPE_ME:	return MM_code[elem];
+	case TYPE_HE:	return H_code[elem];
+	case TYPE_CT:	return C_code[elem];
+	default:		return NULL;
+	}
 }

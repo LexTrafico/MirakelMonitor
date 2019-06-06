@@ -45,6 +45,8 @@ void CreateBrushes()
 	hBrushCG[_CG_MG] = CreateSolidBrush(RGB(255, 255, 255));  /* MG */
 	hBrushCG[_CG_GL] = CreateSolidBrush(RGB(255, 255, 0));    /* GL */
 	hBrushCG[_CG_RV] = CreateSolidBrush(RGB(128, 0, 0));      /* R  */
+	hBrushCG[_CG_NO] = CreateSolidBrush(RGB(160, 160, 160));  /* none */
+	hBrushCG[_CG_BG] = CreateSolidBrush(RGB(221, 221, 221));  /* background */
 	hBrushCG[_CG_MAX] = CreateSolidBrush(RGB(221, 221, 221)); /* GR */
 
 	hPenMirakel[BRUSH_RED] = CreatePen(0, 1, RGB(255, 0, 0));
@@ -96,4 +98,43 @@ HWND CreateTabDisplayWindow(HWND hwndTab, HINSTANCE hInstance, char * pcClassNam
 		hwndTab, NULL, hInstance, NULL);
 	e = GetLastError();
 	return hWnd;
+}
+
+/* Function to add cstring items to a treeview control */
+HTREEITEM AddItemToTree(HWND hwndTV, LPTSTR lpszItem, HTREEITEM hParent, int num)
+{
+	TVITEM tvi;
+	TVINSERTSTRUCT  tvins;
+	static HTREEITEM hPrev = (HTREEITEM)TVI_FIRST;
+	static HTREEITEM hPrevRootItem = NULL;
+	static HTREEITEM hPrevLev2Item = NULL;
+	HTREEITEM hti;
+
+	memset(&tvins, 0, sizeof(tvins));
+	memset(&tvi, 0, sizeof(tvi));
+
+	tvi.mask = TVIF_TEXT | TVIF_PARAM;
+
+	// Set the text of the item. 
+	tvi.pszText = lpszItem;
+	tvi.cchTextMax = sizeof(tvi.pszText) / sizeof(tvi.pszText[0]);
+
+	// Save the heading level in the item's application-defined 
+	// data area. 
+	tvi.lParam = (LPARAM)num;
+	tvins.item = tvi;
+	tvins.hInsertAfter = hPrev;
+
+	// Set the parent item based on the specified level. 
+	if (hParent == NULL) tvins.hParent = TVI_ROOT;
+	else tvins.hParent = hParent;
+
+	// Add the item to the tree-view control. 
+	hPrev = (HTREEITEM)SendMessage(hwndTV, TVM_INSERTITEM,
+		0, (LPARAM)(LPTVINSERTSTRUCT)&tvins);
+
+	if (hPrev == NULL)
+		return NULL;
+
+	return hPrev;
 }

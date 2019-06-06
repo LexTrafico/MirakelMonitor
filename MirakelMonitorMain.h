@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <Windowsx.h>
 #include <tchar.h>
+#include "MirakelTypes.h"
 #include "MirakelMonitor.h"
 #include "MirakelMonitorUtilities.h"
 #include "CCOLDefines.h"
@@ -22,7 +23,6 @@ HWND hMainTab = NULL;
 HWND hTabs[TAB_MAX];
 HINSTANCE hMainInstance;
 char * cParentWinName;
-
 int iCharWidth, iCharHeight;
 
 char lpszTemp1[SZBUFFERSIZE];
@@ -33,6 +33,10 @@ const char * TAB_MAIN_TITLE[TAB_MAX] =
 	"Log"
 };
 
+CONTROLLERSTRUCT * Controller;
+
+unsigned long CALLBACK MirGetCTTime(void);
+struct fasenlogentry * CALLBACK MirGetCCOLFCState(short fc);
 LRESULT CALLBACK WindowProc(HWND hWndMir, UINT uMsg, WPARAM wParam, LPARAM lParam);
 HWND CreateMainTabControl(HWND hwndParent, HINSTANCE hInst);
 ATOM RegisterSomeClass(HINSTANCE hInstance, char * className, WNDPROC proc);

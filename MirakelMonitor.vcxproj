@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CCOLDefines.h" />
+    <ClInclude Include="MirakelTypes.h" />
     <ClInclude Include="TabFasenlog.h" />
     <ClInclude Include="MirakelMonitor.h" />
     <ClInclude Include="MirakelMonitorMain.h" />
