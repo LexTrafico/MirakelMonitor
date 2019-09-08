@@ -152,26 +152,36 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CCOLDefines.h" />
+    <ClInclude Include="DataGridView.h" />
     <ClInclude Include="MirakelTypes.h" />
+    <ClInclude Include="TabCounters.h" />
     <ClInclude Include="TabFasenlog.h" />
     <ClInclude Include="MirakelMonitor.h" />
     <ClInclude Include="MirakelMonitorMain.h" />
     <ClInclude Include="MirakelMonitorUtilities.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TabFasebewakingsTijden.h" />
+    <ClInclude Include="TabParameters.h" />
+    <ClInclude Include="TabSwitches.h" />
+    <ClInclude Include="TabTimers.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DataGridView.c" />
     <ClCompile Include="MirakelMonitorMain.c" />
     <ClCompile Include="MirakelMonitorUtilities.c" />
+    <ClCompile Include="TabSwitches.c" />
     <ClCompile Include="stdafx.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TabCounters.c" />
     <ClCompile Include="TabFasenlog.c" />
     <ClCompile Include="TabFasebewakingsTijden.c" />
+    <ClCompile Include="TabParameters.c" />
+    <ClCompile Include="TabTimers.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

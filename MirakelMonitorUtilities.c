@@ -93,7 +93,7 @@ HWND CreateTabDisplayWindow(HWND hwndTab, HINSTANCE hInstance, char * pcClassNam
 	TabCtrl_AdjustRect(hwndTab, 0, &r);
 	HWND hWnd = CreateWindow(
 		pcClassName, "",
-		WS_CHILD | WS_VISIBLE,
+		WS_CHILD,
 		r.left, r.top, r.right - r.left, r.bottom - r.top,
 		hwndTab, NULL, hInstance, NULL);
 	e = GetLastError();

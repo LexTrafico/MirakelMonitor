@@ -110,7 +110,6 @@ extern const char * US_code[];
 extern const char * T_code[];
 extern const char * C_code[];
 extern const char * D_code[];
-extern const char * T_code[];
 extern const char * MM_code[];
 
 extern short PAR[];
@@ -184,6 +183,7 @@ extern short ST[];
 extern short MM[];
 extern short C[];
 extern short C_counter[];
+extern short *C_max;
 extern short R[];
 extern short TFB_timer[];
 extern short AR[];
@@ -249,6 +249,10 @@ extern short * CFL_max;
 #define ML8 7
 
 extern short FC_MAX;
+extern short PRM_MAX;
+extern short SCH_MAX;
+extern short TM_MAX;
+extern short CT_MAX;
 
 #define _CIF_JAAR			0		
 #define _CIF_MAAND			1		
@@ -271,3 +275,10 @@ extern short FC_MAX;
 #define _CG_NO  7
 #define _CG_BG  7
 #define _CG_MAX 8   
+
+extern int CCOL_Time_Speed_Halt;
+
+extern short CIF_PARM1WIJZPB;
+extern short CIF_PARM1WIJZAP;
+extern short CIF_PARM2WIJZPB;
+extern short CIF_PARM2WIJZAP;

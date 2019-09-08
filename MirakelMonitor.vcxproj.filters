@@ -42,6 +42,21 @@
     <ClInclude Include="MirakelTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TabParameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DataGridView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TabTimers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TabCounters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TabSwitches.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MirakelMonitorMain.c">
@@ -57,6 +72,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TabFasebewakingsTijden.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabParameters.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DataGridView.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabTimers.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabCounters.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabSwitches.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

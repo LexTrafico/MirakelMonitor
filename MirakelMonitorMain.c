@@ -88,8 +88,16 @@ BOOL NotifyMainTab(LPARAM lParam)
 		int iPage = TabCtrl_GetCurSel(hMainTab);
 		for (int i = 0; i < TAB_MAX; i++)
 		{
-			if (i == iPage) ShowWindow(hTabs[i], SW_SHOW);
-			else ShowWindow(hTabs[i], SW_HIDE);
+			if (i == iPage)
+			{
+				ShowWindow(hTabs[i], SW_SHOW);
+				SendMessage(hTabs[i], MIRMSG_TABCHANGE, (WPARAM)SW_SHOW, 0);
+			}
+			else
+			{
+				ShowWindow(hTabs[i], SW_HIDE);
+				SendMessage(hTabs[i], MIRMSG_TABCHANGE, (WPARAM)SW_HIDE, 0);
+			}
 		}
 		break;
 	}
@@ -162,7 +170,7 @@ int MirakelMonitor_init(char * lpWindowName)
 		dwStyle,                        // Window style
 
 		// Size and position
-		0, 0, 200, 200,
+		0, 0, 400, 500,
 
 		hParent,    // Parent window    
 		NULL,       // Menu
@@ -176,16 +184,22 @@ int MirakelMonitor_init(char * lpWindowName)
 	}
 
 	// Initialize common controls.
-	icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-	icex.dwICC = ICC_TAB_CLASSES;
+	icex.dwSize = sizeof(icex);
+	icex.dwICC = ICC_TAB_CLASSES | ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&icex);
-	
+
 	Initialize(hMainWin);
+	InitDataGridView(hMainInstance);
+
 	CreateBrushes();
 	
 	hMainTab = CreateMainTabControl(hMainWin, hMainInstance);
-	hTabs[TAB_WACHTTIJDEN] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabWachttijdClass", (WNDPROC)WindowProcTabWachttijden);
-	hTabs[TAB_FASENLOG] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabFasenlogClass", (WNDPROC)WindowProcTabFasenlog);
+	hTabs[TAB_TIMERS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabTimersClass", (WNDPROC)WindowProcTabTimers);
+	hTabs[TAB_COUNTERS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabCountersClass", (WNDPROC)WindowProcTabCounters);
+	hTabs[TAB_PARAMETERS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabParametersClass", (WNDPROC)WindowProcTabParameters);
+	hTabs[TAB_SWITCHES] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabSwitchesClass", (WNDPROC)WindowProcTabSwitches);
+	//hTabs[TAB_WACHTTIJDEN] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabWachttijdClass", (WNDPROC)WindowProcTabWachttijden);
+	//hTabs[TAB_FASENLOG] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabFasenlogClass", (WNDPROC)WindowProcTabFasenlog);
 
 	for (int i = 0; i < TAB_MAX; i++)
 	{
@@ -200,6 +214,8 @@ int MirakelMonitor_init(char * lpWindowName)
 		else ShowWindow(hTabs[i], SW_HIDE);
 	}
 
+	bInitialized = TRUE;
+
 	return 0;
 }
 
@@ -207,11 +223,29 @@ void MirakelMonitor()
 {
 	RECT rect;
 
-	TabWachttijdenUpdate();
-	fasenlog_update(Controller);
+	if (!bInitialized) return;
 
-	GetClientRect(hMainWin, &rect);
-	InvalidateRect(hMainWin, &rect, TRUE);
+	if (CCOL_Time_Speed_Halt & 0x10 ||
+		CCOL_Time_Speed_Halt == 1 ||
+		CCOL_Time_Speed_Halt == 2 && update_monitor % 2 == 0 ||
+		CCOL_Time_Speed_Halt == 3 && update_monitor % 5 == 0 ||
+		CCOL_Time_Speed_Halt == 4 && update_monitor == 0 ||
+		((CCOL_Time_Speed_Halt == 5 || CCOL_Time_Speed_Halt == 6) && 
+		 (last_clock == 0 || (clock() - last_clock) >= (CLOCKS_PER_SEC / 10))))
+	{
+		TabTimersUpdate();
+		TabCountersUpdate();
+		TabParametersUpdate();
+		TabSwitchesUpdate();
+		//TabWachttijdenUpdate();
+		//fasenlog_update(Controller);
+		if (CCOL_Time_Speed_Halt == 5 || CCOL_Time_Speed_Halt == 6)
+		{
+			last_clock = clock();
+		}
+	}
+	++update_monitor;
+	if (update_monitor == 10) update_monitor = 0;
 }
 
 // Function to get time from controller

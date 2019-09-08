@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <CommCtrl.h>
 #include "CCOLDefines.h"
+#include "DataGridView.h"
 
 typedef enum MirakelColorsEnum
 {
@@ -47,3 +48,5 @@ void CreateBrushes();
 HWND CreateTabDisplayWindow(HWND hwndTab, HINSTANCE hInstance, char * pcClassName, WNDPROC wProc);
 ATOM RegisterSomeClass(HINSTANCE hInstance, char * className, WNDPROC proc);
 HTREEITEM AddItemToTree(HWND hwndTV, LPTSTR lpszItem, HTREEITEM hParent, int num);
+
+#define MIRMSG_TABCHANGE WM_USER + 0x13

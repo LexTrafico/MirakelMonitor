@@ -1,0 +1,104 @@
+/****************************************************************************\
+*
+*     FILE:     DataGridView.h
+*
+*     PURPOSE:  ListView based Datagrid with Editable subItems
+*
+*     COMMENTS:
+*               This source is distributed in the hope that it will be useful,
+*               but WITHOUT ANY WARRANTY; without even the implied warranty of
+*               MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*     Copyright 2007 David MacDermot.
+*
+* History:
+*                Aug '07 - Created
+*                July '09 - Added Unicode support
+*                           Improved behavior of edit box during scrolling
+*                           Improved redraw of grid lines
+*                           Changed Get(Set)WindowLong to Get(Set)WindowLongPtr for 64bit compatability
+*
+\****************************************************************************/
+
+/****************************************************************************/
+// Messages
+
+#define DGVM_GETLISTVIEWCONTROL WM_USER + 0x01
+#define DGVM_GETEDITCONTROL WM_USER + 0x02
+#define DGVM_GETCOLUMNCOUNT WM_USER + 0x03
+#define DGVM_GETEDITORBACKCLR WM_USER + 0x04
+#define DGVM_SETEDITORBACKCLR WM_USER + 0x05
+#define DGVM_GETEDITORTEXTCLR WM_USER + 0x06
+#define DGVM_SETEDITORTEXTCLR WM_USER + 0x07
+#define DGVM_RESIZEABLEHEADER WM_USER + 0x08
+#define DGVM_GETTXTCLR WM_USER + 0x09
+#define DGVM_SETTXTCLR WM_USER + 0x0A
+#define DGVM_GETALTBACKCLR WM_USER + 0x0B
+#define DGVM_SETALTBACKCLR WM_USER + 0x0C
+#define DGVM_GETALTTXTCLR WM_USER + 0x0D
+#define DGVM_SETALTTXTCLR WM_USER + 0x0E
+#define DGVM_ROWHEADERS WM_USER + 0x0F
+#define DGVM_SETROWHEIGHT WM_USER + 0x10
+#define DGVM_EXTENDLASTCOLUMN WM_USER + 0x11
+
+#define DGVM_ENDEDIT WM_USER + 0x12
+
+/****************************************************************************/
+// Macroes
+
+#define DataGridView_AddColumn(hGrid,nCol,iWidth,szColText){ \
+	LVCOLUMN lv_c; lv_c.mask=LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM; \
+	lv_c.cx=iWidth; lv_c.pszText=(szColText); \
+	ListView_InsertColumn(hGrid,nCol,&lv_c);}
+
+#define DataGridView_AddColumns(hGrid,aryColTxt,iColCount) \
+	for(i = 0; i<iColCount;i++) \
+		DataGridView_AddColumn((hGrid),i,lstrlen(aryColTxt[i])*16,aryColTxt[i]);
+
+#define DataGridView_AddRow(hGrid,aryItemTxt,iColCount) \
+	for(i = 0; i<iColCount;){\
+		LV_ITEM Lv_i; \
+		Lv_i.mask=LVIF_TEXT; \
+		if(0==i) { \
+			Lv_i.iItem=ListView_GetItemCount(hGrid); \
+			Lv_i.iSubItem=i; Lv_i.pszText=aryItemTxt[i++]; \
+	 		ListView_InsertItem(hGrid,&Lv_i);} \
+		Lv_i.iSubItem=i; \
+		Lv_i.pszText=aryItemTxt[i++]; \
+		ListView_SetItem(hGrid,&Lv_i);}
+
+#define DataGridView_GetEditorBkColor(hwnd)  (COLORREF)SNDMSG((hwnd),DGVM_GETEDITORBACKCLR,0,0L)
+#define DataGridView_SetEditorBkColor(hwnd,clrBk)  (BOOL)SNDMSG((hwnd),DGVM_SETEDITORBACKCLR,0,(LPARAM)(COLORREF)(clrBk))
+#define DataGridView_GetEditorTxtColor(hwnd)  (COLORREF)SNDMSG((hwnd),DGVM_GETEDITORTEXTCLR,0,0L)
+#define DataGridView_SetEditorTxtColor(hwnd,clrTxt)  (BOOL)SNDMSG((hwnd),DGVM_SETEDITORTEXTCLR,0,(LPARAM)(COLORREF)(clrTxt))
+#define DataGridView_GetListViewControl(hwnd)  (HWND)SNDMSG((hwnd),DGVM_GETLISTVIEWCONTROL,0,0L)
+#define DataGridView_GetEditControl(hwnd)  (HWND)SNDMSG((hwnd),DGVM_GETEDITCONTROL,0,0L)
+#define DataGridView_GetColumnCount(hwnd)  (INT)SNDMSG((hwnd),DGVM_GETCOLUMNCOUNT,0,0L)
+#define DataGridView_GetRowCount(hwnd)  ListView_GetItemCount((hwnd))
+#define DataGridView_SetResizableHeader(hwnd,fResizable)  (BOOL)SNDMSG((hwnd),DGVM_RESIZEABLEHEADER,(WPARAM)(fResizable),(LPARAM)0L)
+#define DataGridView_GetBkColor(hwnd)  ListView_GetBkColor(hwnd)
+#define DataGridView_SetBkColor(hwnd,clrBk)  ListView_SetBkColor(hwnd,clrBk)
+#define DataGridView_GetTextColor(hwnd)  ListView_GetTextColor(hwnd)
+#define DataGridView_SetTextColor(hwnd,clrTx)  ListView_SetTextColor(hwnd,clrTx)
+#define DataGridView_GetAltBkColor(hwnd)  (COLORREF)SNDMSG((hwnd),DGVM_GETALTBACKCLR,0,0L)
+#define DataGridView_SetAltBkColor(hwnd,clrBk,fPaintByRow)  (BOOL)SNDMSG((hwnd),DGVM_SETALTBACKCLR,(WPARAM)(fPaintByRow),(LPARAM)(COLORREF)(clrBk))
+#define DataGridView_GetAltTextColor(hwnd)  (COLORREF)SNDMSG((hwnd),DGVM_GETALTTXTCLR,0,0L)
+#define DataGridView_SetAltTextColor(hwnd,clrTx)  (BOOL)SNDMSG((hwnd),DGVM_SETALTTXTCLR,0,(LPARAM)(COLORREF)(clrTx))
+#define DataGridView_DisplayRowHeaders(hwnd,fShow)  (BOOL)SNDMSG((hwnd),DGVM_ROWHEADERS,(WPARAM)(fShow),0L)
+#define DataGridView_SetRowHeight(hwnd,iHeight)  (BOOL)SNDMSG((hwnd),DGVM_SETROWHEIGHT,(WPARAM)(iHeight),0L)
+#define DataGridView_ExtendLastColumn(hwnd,fExtend,newWidth, newHeight)  (BOOL)SNDMSG((hwnd),DGVM_EXTENDLASTCOLUMN,(WPARAM)(fExtend),MAKELPARAM(newWidth, newHeight))
+
+//menno
+void DataGridView_GetCellValue(HWND hWnd, int row, int col, char * string, int strsize);
+void DataGridView_SetCellValue(HWND hWnd, int row, int col, const char * string);
+int DataGridView_GetTopIndex();
+int DataGridView_IsItemVisible(int row);
+
+/****************************************************************************/
+// Exported function prototypes
+
+typedef short (CALLBACK * CHECKCHANGED) (int);
+HMENU hPopupMenuDGV;
+
+BOOL InitDataGridView(HINSTANCE hInstance);
+
