@@ -233,14 +233,6 @@ void TabWachttijdenUpdate()
 				pstrTFBMonitor[fc].ulTFBTotal += pstrTFBMonitor[fc].iTFBTimer;
 				pstrTFBMonitor[fc].iTFBGemiddeld = pstrTFBMonitor[fc].ulTFBTotal / pstrTFBMonitor[fc].iTFBCount;
 				pstrTFBMonitor[fc].iTFBTimer = 0;
-				
-				sprintf_s(lpszTemp1, SZBUFFERSIZE, "FC%s: Max: %d (%2.2d-%2.2d-%4d %2.2d:%2.2d:%2.2d) Gem.: %d",
-					FC_code[fc], pstrTFBMonitor[fc].iTFBMax,
-					CIF_KLOK[_CIF_DAG], CIF_KLOK[_CIF_MAAND], CIF_KLOK[_CIF_JAAR],
-					CIF_KLOK[_CIF_UUR], CIF_KLOK[_CIF_MINUUT], CIF_KLOK[_CIF_SECONDE],
-					pstrTFBMonitor[fc].iTFBGemiddeld);
-				strTFBContent.ti[fc].lpszText = lpszTemp1;
-				SendMessage(strTFBContent.hwndTip[fc], TTM_UPDATETIPTEXT, 0, (LPARAM)(LPTOOLINFO)&strTFBContent.ti[fc]);
 			}
 			if (EGL[fc] && PR[fc] && MK[fc])
 				pstrTFBMonitor[fc].bOverstaan = TRUE;
