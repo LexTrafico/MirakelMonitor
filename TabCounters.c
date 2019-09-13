@@ -55,7 +55,7 @@ LRESULT CALLBACK WindowProcTabCounters(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			C_cur[ct] = C_max[ct];
 			C_set[ct] = 0;
 		}
-		for (ct = 0; ct < 1; ++ct)
+		for (ct = 0; ct < CT_MAX; ++ct)
 		{
 			strcpy_s(temp[0], 32, C_code[ct]);
 			sprintf_s(temp[1], 32, "%d", C_max[ct]);
@@ -67,8 +67,8 @@ LRESULT CALLBACK WindowProcTabCounters(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		CreateThread(
 			NULL,                   // default security attributes
 			0,                      // use default stack size  
-			AddRemainingCounters,     // thread function name
-			ct,                     // argument to thread function 
+			AddRemainingCounters,   // thread function name
+			ct + 1,                 // argument to thread function 
 			0,                      // use default creation flags 
 			NULL);                  // returns the thread identifier 
 

@@ -61,7 +61,7 @@ LRESULT CALLBACK WindowProcTabParameters(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			NULL,                   // default security attributes
 			0,                      // use default stack size  
 			AddRemainingParameters, // thread function name
-			prm,                    // argument to thread function 
+			prm + 1,                // argument to thread function 
 			0,                      // use default creation flags 
 			NULL);                  // returns the thread identifier 
 

@@ -60,8 +60,8 @@ LRESULT CALLBACK WindowProcTabSwitches(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		CreateThread(
 			NULL,                   // default security attributes
 			0,                      // use default stack size  
-			AddRemainingSwitches, // thread function name
-			sch,                    // argument to thread function 
+			AddRemainingSwitches,   // thread function name
+			sch + 1,                // argument to thread function 
 			0,                      // use default creation flags 
 			NULL);                  // returns the thread identifier 
 

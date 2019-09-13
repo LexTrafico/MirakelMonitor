@@ -11,20 +11,20 @@
 #include <stdio.h>
 #include <time.h>
 
-//#include "TabFasebewakingsTijden.h"
-//#include "TabFasenlog.h"
+#include "TabFasebewakingsTijden.h"
 #include "TabParameters.h"
 #include "TabSwitches.h"
 #include "TabTimers.h"
 #include "TabCounters.h"
+//#include "TabFasenlog.h"
 
-#define TAB_TIMERS      0
-#define TAB_COUNTERS    1
-#define TAB_PARAMETERS  2
-#define TAB_SWITCHES    3
-//#define TAB_WACHTTIJDEN 2
+#define TAB_WACHTTIJDEN 0
+#define TAB_TIMERS      1
+#define TAB_COUNTERS    2
+#define TAB_PARAMETERS  3
+#define TAB_SWITCHES    4
 //#define TAB_FASENLOG    3
-#define TAB_MAX         4
+#define TAB_MAX         5
 
 HWND hParent = NULL;
 HWND hMainWin = NULL;
@@ -33,6 +33,7 @@ HWND hTabs[TAB_MAX];
 HINSTANCE hMainInstance;
 char * cParentWinName;
 int iCharWidth, iCharHeight;
+int iSelectedTab;
 
 char bInitialized = FALSE;
 int update_monitor = 0;
@@ -42,11 +43,11 @@ char lpszTemp1[SZBUFFERSIZE];
 
 const char * TAB_MAIN_TITLE[TAB_MAX] =
 {
+	"TFB",
 	"TM",
 	"CT",
 	"PRM",
 	"SCH",
-	//"TFB",
 	//"Log",
 };
 

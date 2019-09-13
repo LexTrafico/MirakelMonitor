@@ -85,10 +85,10 @@ BOOL NotifyMainTab(LPARAM lParam)
 	{
 	case TCN_SELCHANGE:
 	{
-		int iPage = TabCtrl_GetCurSel(hMainTab);
+		iSelectedTab = TabCtrl_GetCurSel(hMainTab);
 		for (int i = 0; i < TAB_MAX; i++)
 		{
-			if (i == iPage)
+			if (i == iSelectedTab)
 			{
 				ShowWindow(hTabs[i], SW_SHOW);
 				SendMessage(hTabs[i], MIRMSG_TABCHANGE, (WPARAM)SW_SHOW, 0);
@@ -146,6 +146,7 @@ int MirakelMonitor_init(char * lpWindowName)
 	strcpy_s((char *)Controller->lpWindowName, strlen(lpWindowName) + 1, lpWindowName);
 
 	WNDCLASS wc;
+	char name[128];
 	DWORD dwStyle;
 	CREATESTRUCT css;
 	INITCOMMONCONTROLSEX icex;
@@ -164,9 +165,10 @@ int MirakelMonitor_init(char * lpWindowName)
 
 	int e = RegisterMirakelMonitorClass(hMainInstance);
 
+	sprintf_s(name, 128, "Mirakel monitor 2.0 - %s", lpWindowName);
 	hMainWin = CreateWindow(
 		CLASS_NAME,                     // Window class
-		"Mirakel 2.0",                  // Window text
+		name,                           // Window text
 		dwStyle,                        // Window style
 
 		// Size and position
@@ -198,7 +200,7 @@ int MirakelMonitor_init(char * lpWindowName)
 	hTabs[TAB_COUNTERS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabCountersClass", (WNDPROC)WindowProcTabCounters);
 	hTabs[TAB_PARAMETERS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabParametersClass", (WNDPROC)WindowProcTabParameters);
 	hTabs[TAB_SWITCHES] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabSwitchesClass", (WNDPROC)WindowProcTabSwitches);
-	//hTabs[TAB_WACHTTIJDEN] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabWachttijdClass", (WNDPROC)WindowProcTabWachttijden);
+	hTabs[TAB_WACHTTIJDEN] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabWachttijdClass", (WNDPROC)WindowProcTabWachttijden);
 	//hTabs[TAB_FASENLOG] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabFasenlogClass", (WNDPROC)WindowProcTabFasenlog);
 
 	for (int i = 0; i < TAB_MAX; i++)
@@ -237,13 +239,20 @@ void MirakelMonitor()
 		TabCountersUpdate();
 		TabParametersUpdate();
 		TabSwitchesUpdate();
-		//TabWachttijdenUpdate();
 		//fasenlog_update(Controller);
 		if (CCOL_Time_Speed_Halt == 5 || CCOL_Time_Speed_Halt == 6)
 		{
 			last_clock = clock();
 		}
+
+		if (iSelectedTab == TAB_WACHTTIJDEN)
+		{
+			GetWindowRect(hTabs[TAB_WACHTTIJDEN], &rect);
+			InvalidateRect(hTabs[TAB_WACHTTIJDEN], &rect, TRUE);
+		}
 	}
+	// update always
+	TabWachttijdenUpdate();
 	++update_monitor;
 	if (update_monitor == 10) update_monitor = 0;
 }
