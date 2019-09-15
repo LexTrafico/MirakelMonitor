@@ -15,6 +15,12 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 	{
 	case WM_CREATE:
 		pstrTFBMonitor = (TFBMONSTRUCT *)malloc(FC_MAX * sizeof(TFBMONSTRUCT));
+		for (int fc = 0; fc < FC_MAX; ++fc)
+		{
+			pstrTFBMonitor[fc].iTFBCurrent = 0;
+			pstrTFBMonitor[fc].iTFBCount = 0;
+			pstrTFBMonitor[fc].iTFBMeasured = (int *)malloc(TFBMAXMEASURE * sizeof(int));
+		}
 		strTFBContent.hwndTip = (HWND *)malloc(FC_MAX * sizeof(HWND));
 		strTFBContent.ti = (TOOLINFO *)malloc(FC_MAX * sizeof(TOOLINFO));
 		TabWachttijdenReset();
@@ -55,6 +61,10 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 		break;
 
 	case WM_DESTROY:
+		for (int fc = 0; fc < FC_MAX; ++fc)
+		{
+			free(pstrTFBMonitor[fc].iTFBMeasured);
+		}
 		free(pstrTFBMonitor);
 		free(strTFBContent.hwndTip);
 		free(strTFBContent.ti);
@@ -229,9 +239,30 @@ void TabWachttijdenUpdate()
 			}
 			if (SG[fc])
 			{
-				++pstrTFBMonitor[fc].iTFBCount;
-				pstrTFBMonitor[fc].ulTFBTotal += pstrTFBMonitor[fc].iTFBTimer;
-				pstrTFBMonitor[fc].iTFBGemiddeld = pstrTFBMonitor[fc].ulTFBTotal / pstrTFBMonitor[fc].iTFBCount;
+				if (pstrTFBMonitor[fc].iTFBCount < TFBMAXMEASURE)
+				{
+					++pstrTFBMonitor[fc].iTFBCount;
+				}
+				pstrTFBMonitor[fc].iTFBMeasured[pstrTFBMonitor[fc].iTFBCurrent] = pstrTFBMonitor[fc].iTFBTimer;
+				++pstrTFBMonitor[fc].iTFBCurrent;
+				if (pstrTFBMonitor[fc].iTFBCurrent >= TFBMAXMEASURE) pstrTFBMonitor[fc].iTFBCurrent = 0;
+				pstrTFBMonitor[fc].ulTFBTotal = 0;
+				for (int i = 0; i < pstrTFBMonitor[fc].iTFBCount; ++i)
+				{
+					pstrTFBMonitor[fc].ulTFBTotal += pstrTFBMonitor[fc].iTFBMeasured[i];
+				}
+				int gemOld = pstrTFBMonitor[fc].iTFBGemiddeld;
+				pstrTFBMonitor[fc].iTFBGemiddeld = (int)((double)pstrTFBMonitor[fc].ulTFBTotal / (double)pstrTFBMonitor[fc].iTFBCount);
+				if (gemOld != pstrTFBMonitor[fc].iTFBGemiddeld)
+				{
+					sprintf_s(lpszTemp1, SZBUFFERSIZE, "FC%s - Max: %d (%2.2d-%2.2d-%4d %2.2d:%2.2d:%2.2d) Gem.: %d",
+						FC_code[fc], pstrTFBMonitor[fc].iTFBMax,
+						CIF_KLOK[_CIF_DAG], CIF_KLOK[_CIF_MAAND], CIF_KLOK[_CIF_JAAR],
+						CIF_KLOK[_CIF_UUR], CIF_KLOK[_CIF_MINUUT], CIF_KLOK[_CIF_SECONDE],
+						pstrTFBMonitor[fc].iTFBGemiddeld);
+					strTFBContent.ti[fc].lpszText = lpszTemp1;
+					SendMessage(strTFBContent.hwndTip[fc], TTM_UPDATETIPTEXT, 0, (LPARAM)(LPTOOLINFO)&strTFBContent.ti[fc]);
+				}
 				pstrTFBMonitor[fc].iTFBTimer = 0;
 			}
 			if (EGL[fc] && PR[fc] && MK[fc])

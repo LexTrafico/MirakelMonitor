@@ -3,12 +3,16 @@
 #include <Windows.h>
 #include "MirakelMonitorUtilities.h"
 
+#define TFBMAXMEASURE 250
+
 struct TFBMonitorStruct
 {
 	int iTFBTimer;
 	int iTFBMax;
 	int iTFBGemiddeld;
+	int * iTFBMeasured;
 	int iTFBCount;
+	int iTFBCurrent;
 	unsigned long ulTFBTotal;
 	char bOverstaan;
 	short iMKStartTime, iMKEndTime;
