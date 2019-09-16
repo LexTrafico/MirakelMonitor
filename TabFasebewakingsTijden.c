@@ -88,7 +88,6 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 		bufBMP = CreateCompatibleBitmap(hdc, iTFBRight - iTFBLeft, iTFBBottom - iTFBTop);
 		SelectObject(memHdc, bufBMP);
 
-		
 		int fcl;
 		int leftSpace = 50;
 		if (pstrTFBMonitor)

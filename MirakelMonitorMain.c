@@ -239,7 +239,6 @@ void MirakelMonitor()
 		TabCountersUpdate();
 		TabParametersUpdate();
 		TabSwitchesUpdate();
-		//fasenlog_update(Controller);
 		if (CCOL_Time_Speed_Halt == 5 || CCOL_Time_Speed_Halt == 6)
 		{
 			last_clock = clock();
@@ -247,7 +246,7 @@ void MirakelMonitor()
 
 		if (iSelectedTab == TAB_WACHTTIJDEN)
 		{
-			GetWindowRect(hTabs[TAB_WACHTTIJDEN], &rect);
+			GetClientRect(hTabs[TAB_WACHTTIJDEN], &rect);
 			InvalidateRect(hTabs[TAB_WACHTTIJDEN], &rect, TRUE);
 		}
 	}
