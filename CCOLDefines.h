@@ -253,6 +253,11 @@ extern short PRM_MAX;
 extern short SCH_MAX;
 extern short TM_MAX;
 extern short CT_MAX;
+extern short DP_MAX;
+extern short HE_MAX;
+extern short IS_MAX;
+extern short US_MAX;
+extern short ME_MAX;
 
 #define _CIF_JAAR			0		
 #define _CIF_MAAND			1		
@@ -272,9 +277,9 @@ extern short CT_MAX;
 #define _CG_MG  5
 #define _CG_GL  6
 #define _CG_RV  7
-#define _CG_NO  7
-#define _CG_BG  7
-#define _CG_MAX 8   
+#define _CG_NO  8
+#define _CG_BG  9
+#define _CG_MAX 10   
 
 extern int CCOL_Time_Speed_Halt;
 

@@ -3,6 +3,7 @@
 HBRUSH hBrushMirakel[BRUSH_MAX];
 HPEN hPenMirakel[BRUSH_MAX];
 HBRUSH hBrushCG[_CG_MAX + 1];
+HPEN hPenCG[_CG_MAX + 1];
 
 COLORREF greenprtext = RGB(20, 155, 20);
 COLORREF greenartext = RGB(20, 255, 20);
@@ -34,6 +35,7 @@ void CreateBrushes()
 	hBrushMirakel[BRUSH_WHITE] = CreateSolidBrush(RGB(255, 255, 255));
 	hBrushMirakel[BRUSH_BLACK] = CreateSolidBrush(RGB(0, 0, 0));
 	hBrushMirakel[BRUSH_GRAY] = CreateSolidBrush(RGB(128, 128, 128));
+	hBrushMirakel[BRUSH_LIGHTBLUE] = CreateSolidBrush(RGB(128, 128, 255));
 	hBrushMirakel[BRUSH_LIGHTGRAY] = CreateSolidBrush(RGB(192, 192, 192));
 	hBrushMirakel[BRUSH_DARKGRAY] = CreateSolidBrush(RGB(64, 64, 64));
 	
@@ -63,7 +65,20 @@ void CreateBrushes()
 	hPenMirakel[BRUSH_BLACK] = CreatePen(0, 1, RGB(0, 0, 0));
 	hPenMirakel[BRUSH_GRAY] = CreatePen(0, 1, RGB(128, 128, 128));
 	hPenMirakel[BRUSH_LIGHTGRAY] = CreatePen(0, 1, RGB(192, 192, 192));
+	hPenMirakel[BRUSH_NULL] = CreatePen(PS_NULL, 0, RGB(0, 0, 0));
 	hPenMirakel[BRUSH_DARKGRAY] = CreatePen(0, 1, RGB(64, 64, 64));
+
+	hPenCG[_CG_RA] = CreatePen(0, 1, RGB(255, 0, 0));      /* RA */
+	hPenCG[_CG_VS] = CreatePen(0, 1, RGB(0, 0, 255));      /* VS */
+	hPenCG[_CG_FG] = CreatePen(0, 1, RGB(0, 128, 0));      /* FG */
+	hPenCG[_CG_WG] = CreatePen(0, 1, RGB(0, 128, 128));    /* WG */
+	hPenCG[_CG_VG] = CreatePen(0, 1, RGB(0, 255, 0));      /* VG */
+	hPenCG[_CG_MG] = CreatePen(0, 1, RGB(255, 255, 255));  /* MG */
+	hPenCG[_CG_GL] = CreatePen(0, 1, RGB(255, 255, 0));    /* GL */
+	hPenCG[_CG_RV] = CreatePen(0, 1, RGB(128, 0, 0));      /* R  */
+	hPenCG[_CG_NO] = CreatePen(0, 1, RGB(160, 160, 160));  /* none */
+	hPenCG[_CG_BG] = CreatePen(0, 1, RGB(221, 221, 221));  /* background */
+	hPenCG[_CG_MAX] = CreatePen(0, 1, RGB(221, 221, 221)); /* GR */
 }
 
 ATOM RegisterSomeClass(HINSTANCE hInstance, char * className, WNDPROC proc)

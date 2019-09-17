@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Windows.h>
+#include "Windowsx.h"
 #include <CommCtrl.h>
 #include "CCOLDefines.h"
 #include "DataGridView.h"
@@ -21,13 +22,16 @@ typedef enum MirakelColorsEnum
 	BRUSH_BLACK,
 	BRUSH_GRAY,
 	BRUSH_LIGHTGRAY,
+	BRUSH_LIGHTBLUE,
 	BRUSH_DARKGRAY,
+	BRUSH_NULL,
 	BRUSH_MAX
 };
 
 extern HBRUSH hBrushMirakel[BRUSH_MAX];
 extern HBRUSH hBrushCG[_CG_MAX + 1];
 extern HPEN hPenMirakel[BRUSH_MAX];
+extern HPEN hPenCG[_CG_MAX + 1];
 extern HWND hMainTab;
 extern HINSTANCE hMainInstance;
 

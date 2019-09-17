@@ -32,6 +32,9 @@ static struct TFBMonitorContent
 static int iTFBTop, iTFBBottom, iTFBLeft, iTFBRight;
 static int iTFBHoogsteooit = 0;
 
+HDC hDCTabTFB;
+HBITMAP hBitmapTFB;
+
 LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void TabWachttijdenUpdate();
 void TabWachttijdenReset();

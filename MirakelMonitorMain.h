@@ -16,15 +16,23 @@
 #include "TabSwitches.h"
 #include "TabTimers.h"
 #include "TabCounters.h"
-//#include "TabFasenlog.h"
+#ifdef EXTRAMON
+    #include "TabTracerLog.h"
+    //#include "TabFasenlog.h"
+#endif
 
 #define TAB_WACHTTIJDEN 0
 #define TAB_TIMERS      1
 #define TAB_COUNTERS    2
 #define TAB_PARAMETERS  3
 #define TAB_SWITCHES    4
-//#define TAB_FASENLOG    3
-#define TAB_MAX         5
+#ifdef EXTRAMON
+	#define TAB_TRACERLOG   5
+	//#define TAB_FASENLOG    3
+	#define TAB_MAX         6
+#else
+	#define TAB_MAX         5
+#endif
 
 HWND hParent = NULL;
 HWND hMainWin = NULL;
@@ -48,7 +56,10 @@ const char * TAB_MAIN_TITLE[TAB_MAX] =
 	"CT",
 	"PRM",
 	"SCH",
+#ifdef EXTRAMON
+	"Trace",
 	//"Log",
+#endif
 };
 
 CONTROLLERSTRUCT * Controller;

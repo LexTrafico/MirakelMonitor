@@ -6,10 +6,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_SIZE:
 		OnSize(hMainTab, lParam);
-		break;
+		return 0;
 	case WM_NOTIFY:
 		NotifyMainTab(lParam);
-		break;
+		return 0;
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
@@ -201,7 +201,10 @@ int MirakelMonitor_init(char * lpWindowName)
 	hTabs[TAB_PARAMETERS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabParametersClass", (WNDPROC)WindowProcTabParameters);
 	hTabs[TAB_SWITCHES] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabSwitchesClass", (WNDPROC)WindowProcTabSwitches);
 	hTabs[TAB_WACHTTIJDEN] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabWachttijdClass", (WNDPROC)WindowProcTabWachttijden);
+#ifdef EXTRAMON
+	hTabs[TAB_TRACERLOG] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabTracerLogClass", (WNDPROC)WindowProcTabTracerLog);
 	//hTabs[TAB_FASENLOG] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabFasenlogClass", (WNDPROC)WindowProcTabFasenlog);
+#endif
 
 	for (int i = 0; i < TAB_MAX; i++)
 	{
@@ -231,27 +234,37 @@ void MirakelMonitor()
 		CCOL_Time_Speed_Halt == 1 ||
 		CCOL_Time_Speed_Halt == 2 && update_monitor % 2 == 0 ||
 		CCOL_Time_Speed_Halt == 3 && update_monitor % 5 == 0 ||
-		CCOL_Time_Speed_Halt == 4 && update_monitor == 0 ||
+		CCOL_Time_Speed_Halt == 4 && update_monitor == 0 /*||
 		((CCOL_Time_Speed_Halt == 5 || CCOL_Time_Speed_Halt == 6) && 
-		 (last_clock == 0 || (clock() - last_clock) >= (CLOCKS_PER_SEC / 10))))
+		 (last_clock == 0 || (clock() - last_clock) >= (CLOCKS_PER_SEC / 10)))*/)
 	{
 		TabTimersUpdate();
 		TabCountersUpdate();
 		TabParametersUpdate();
 		TabSwitchesUpdate();
-		if (CCOL_Time_Speed_Halt == 5 || CCOL_Time_Speed_Halt == 6)
-		{
-			last_clock = clock();
-		}
+		//if (CCOL_Time_Speed_Halt == 5 || CCOL_Time_Speed_Halt == 6)
+		//{
+		//	last_clock = clock();
+		//}
 
 		if (iSelectedTab == TAB_WACHTTIJDEN)
 		{
 			GetClientRect(hTabs[TAB_WACHTTIJDEN], &rect);
 			InvalidateRect(hTabs[TAB_WACHTTIJDEN], &rect, TRUE);
 		}
+#ifdef EXTRAMON
+		if (iSelectedTab == TAB_TRACERLOG)
+		{
+			GetClientRect(hTabs[TAB_TRACERLOG], &rect);
+			InvalidateRect(hTabs[TAB_TRACERLOG], &rect, TRUE);
+		}
+#endif
 	}
 	// update always
 	TabWachttijdenUpdate();
+#ifdef EXTRAMON
+	TabTracerLogUpdate();
+#endif
 	++update_monitor;
 	if (update_monitor == 10) update_monitor = 0;
 }

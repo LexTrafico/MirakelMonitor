@@ -90,7 +90,7 @@ LRESULT CALLBACK WindowProcTabCounters(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			SendMessage(hWndCountersDataGrid, WM_SIZE, (WPARAM)SIZE_RESTORED, MAKELPARAM(rect.right - rect.left - 6, rect.bottom - rect.top - 6));
 			InvalidateRect(hMainTab, &rect, TRUE);
 		}
-		break;
+		return 0;
 
 	case MIRMSG_TABCHANGE:
 		switch (wParam)
@@ -121,7 +121,7 @@ LRESULT CALLBACK WindowProcTabCounters(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			C_set[row] = (atoi(temp[0]) != C_orig[row]) ? 1 : 0;
 			return 1;
 		}
-		break;
+		return 0;
 
 	case WM_DESTROY:
 		free(C_orig);
@@ -129,7 +129,7 @@ LRESULT CALLBACK WindowProcTabCounters(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		free(C_cur);
 		free(C_counter_old);
 		free(C_counter_rect);
-		break;
+		return 0;
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }

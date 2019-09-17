@@ -7,9 +7,7 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 	RECT rect;
 	HDC hdc;
 	PAINTSTRUCT ps;
-	HDC memHdc = NULL;
 	POINT mousepos;
-	HBITMAP bufBMP;
 
 	switch (uMsg)
 	{
@@ -58,7 +56,7 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 			/* ToolTip associeren met fc "window" (=rect). */
 			SendMessage(strTFBContent.hwndTip[fc], TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&strTFBContent.ti[fc]);
 		}
-		break;
+		return 0;
 
 	case WM_DESTROY:
 		for (int fc = 0; fc < FC_MAX; ++fc)
@@ -68,7 +66,7 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 		free(pstrTFBMonitor);
 		free(strTFBContent.hwndTip);
 		free(strTFBContent.ti);
-		break;
+		return 0;
 
 	case WM_LBUTTONDOWN:
 		GetClientRect(hWnd, &rect);
@@ -77,90 +75,87 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 		ScreenToClient(hWnd, &mousepos);
 		strTFBContent.iShowFasestat = (mousepos.y - 20) / 20;
 		if (mousepos.y < 20 || strTFBContent.iShowFasestat >= FC_MAX)strTFBContent.iShowFasestat = -1;
-		break;
+		return 0;
 
 	case WM_PAINT:
 	{
 		GetClientRect(hWnd, &rect);
 
 		hdc = GetDC(hWnd);
-		memHdc = CreateCompatibleDC(hdc);
-		bufBMP = CreateCompatibleBitmap(hdc, iTFBRight - iTFBLeft, iTFBBottom - iTFBTop);
-		SelectObject(memHdc, bufBMP);
-
+		
 		int fcl;
 		int leftSpace = 50;
 		if (pstrTFBMonitor)
 		{
 			/* Weergeven schaal indicatie */
-			SelectObject(memHdc, hBrushMirakel[BRUSH_LIGHTGRAY]);
-			Rectangle(memHdc,
+			SelectObject(hDCTabTFB, hBrushMirakel[BRUSH_LIGHTGRAY]);
+			Rectangle(hDCTabTFB,
 				iTFBLeft,
 				iTFBTop,
 				iTFBRight,
 				iTFBBottom);
-			SetTextColor(memHdc, RGB(0, 0, 0));
-			SetBkMode(memHdc, TRANSPARENT);
-			SelectObject(memHdc, hFont);
-			TextOut(memHdc, leftSpace + iTFBLeft, iTFBTop, "0", 1);
-			TextOut(memHdc, leftSpace + iTFBLeft + 100, iTFBTop, "100", 3);
-			TextOut(memHdc, leftSpace + iTFBLeft + 200, iTFBTop, "200", 3);
-			TextOut(memHdc, leftSpace + iTFBLeft + 300, iTFBTop, "300", 3);
-			SetBkMode(memHdc, OPAQUE);
-			SelectObject(memHdc, hPenMirakel[BRUSH_DARKGRAY]);
-			MoveToEx(memHdc, leftSpace + iTFBLeft, iTFBTop + 20, NULL);
-			LineTo(memHdc, leftSpace + iTFBLeft, iTFBTop + 20 + 20 * FC_MAX);
-			MoveToEx(memHdc, leftSpace + iTFBLeft + 100, iTFBTop + 20, NULL);
-			LineTo(memHdc, leftSpace + iTFBLeft + 100, iTFBTop + 20 + 20 * FC_MAX);
-			MoveToEx(memHdc, leftSpace + iTFBLeft + 200, iTFBTop + 20, NULL);
-			LineTo(memHdc, leftSpace + iTFBLeft + 200, iTFBTop + 20 + 20 * FC_MAX);
-			MoveToEx(memHdc, leftSpace + iTFBLeft + 300, iTFBTop + 20, NULL);
-			LineTo(memHdc, leftSpace + iTFBLeft + 300, iTFBTop + 20 + 20 * FC_MAX);
+			SetTextColor(hDCTabTFB, RGB(0, 0, 0));
+			SetBkMode(hDCTabTFB, TRANSPARENT);
+			SelectObject(hDCTabTFB, hFont);
+			TextOut(hDCTabTFB, leftSpace + iTFBLeft, iTFBTop, "0", 1);
+			TextOut(hDCTabTFB, leftSpace + iTFBLeft + 100, iTFBTop, "100", 3);
+			TextOut(hDCTabTFB, leftSpace + iTFBLeft + 200, iTFBTop, "200", 3);
+			TextOut(hDCTabTFB, leftSpace + iTFBLeft + 300, iTFBTop, "300", 3);
+			SetBkMode(hDCTabTFB, OPAQUE);
+			SelectObject(hDCTabTFB, hPenMirakel[BRUSH_DARKGRAY]);
+			MoveToEx(hDCTabTFB, leftSpace + iTFBLeft, iTFBTop + 20, NULL);
+			LineTo(hDCTabTFB, leftSpace + iTFBLeft, iTFBTop + 20 + 20 * FC_MAX);
+			MoveToEx(hDCTabTFB, leftSpace + iTFBLeft + 100, iTFBTop + 20, NULL);
+			LineTo(hDCTabTFB, leftSpace + iTFBLeft + 100, iTFBTop + 20 + 20 * FC_MAX);
+			MoveToEx(hDCTabTFB, leftSpace + iTFBLeft + 200, iTFBTop + 20, NULL);
+			LineTo(hDCTabTFB, leftSpace + iTFBLeft + 200, iTFBTop + 20 + 20 * FC_MAX);
+			MoveToEx(hDCTabTFB, leftSpace + iTFBLeft + 300, iTFBTop + 20, NULL);
+			LineTo(hDCTabTFB, leftSpace + iTFBLeft + 300, iTFBTop + 20 + 20 * FC_MAX);
 
 			for (fcl = 0; fcl < FC_MAX; ++fcl)
 			{
 				/* Kleur voor lopende tijdbalk */
-				SelectObject(memHdc, hBrushMirakel[BRUSH_DARKRED]);
+				SelectObject(hDCTabTFB, hBrushMirakel[BRUSH_DARKRED]);
 				/* Omlijning van balk: rood in geval van bOverstaan */
 				if (pstrTFBMonitor[fcl].bOverstaan)
-					SelectObject(memHdc, hPenMirakel[BRUSH_RED]);
+					SelectObject(hDCTabTFB, hPenMirakel[BRUSH_RED]);
 				else
-					SelectObject(memHdc, hPenMirakel[BRUSH_GRAY]);
+					SelectObject(hDCTabTFB, hPenMirakel[BRUSH_GRAY]);
 				/* Lopende tfb weergeven */
-				Rectangle(memHdc,
+				Rectangle(hDCTabTFB,
 					iTFBLeft + leftSpace,
 					iTFBTop + fcl * 20 + 20,
 					iTFBLeft + leftSpace + pstrTFBMonitor[fcl].iTFBTimer,
 					iTFBTop + fcl * 20 + 35);
 				/* Maximale waarde */
-				SelectObject(memHdc, hPenMirakel[BRUSH_RED]);
-				Rectangle(memHdc,
+				SelectObject(hDCTabTFB, hPenMirakel[BRUSH_RED]);
+				Rectangle(hDCTabTFB,
 					iTFBLeft + leftSpace + pstrTFBMonitor[fcl].iTFBMax,
 					iTFBTop + fcl * 20 + 20,
 					iTFBLeft + leftSpace + pstrTFBMonitor[fcl].iTFBMax + 2,
 					iTFBTop + fcl * 20 + 35);
 				/* Gemiddelde waarde */
-				SelectObject(memHdc, hPenMirakel[BRUSH_BLUE]);
-				Rectangle(memHdc,
+				SelectObject(hDCTabTFB, hPenMirakel[BRUSH_BLUE]);
+				Rectangle(hDCTabTFB,
 					iTFBLeft + leftSpace + pstrTFBMonitor[fcl].iTFBGemiddeld,
 					iTFBTop + fcl * 20 + 20,
 					iTFBLeft + leftSpace + pstrTFBMonitor[fcl].iTFBGemiddeld + 2,
 					iTFBTop + fcl * 20 + 35);
-				SelectObject(memHdc, hPenMirakel[BRUSH_GREEN]);
+				SelectObject(hDCTabTFB, hPenMirakel[BRUSH_GREEN]);
 				if (G[fcl] && PR[fcl])
-					SetTextColor(memHdc, greenprtext);
+					SetTextColor(hDCTabTFB, greenprtext);
 				else if (G[fcl] && AR[fcl])
-					SetTextColor(memHdc, greenartext);
+					SetTextColor(hDCTabTFB, greenartext);
 				else
-					SetTextColor(memHdc, redtext);
-				SetBkMode(memHdc, TRANSPARENT);
-				TextOut(memHdc, iTFBLeft + 19, fcl * 20 + 20 + iTFBTop, FC_code[fcl], strlen(FC_code[fcl]));
-				SetBkMode(memHdc, OPAQUE);
+					SetTextColor(hDCTabTFB, redtext);
+				SetBkMode(hDCTabTFB, TRANSPARENT);
+				TextOut(hDCTabTFB, iTFBLeft + 19, fcl * 20 + 20 + iTFBTop, FC_code[fcl], strlen(FC_code[fcl]));
+				SetBkMode(hDCTabTFB, OPAQUE);
 
 				/* FC Status */
-				SelectObject(memHdc, hPenMirakel[BRUSH_GRAY]);
-				SelectObject(memHdc, hBrushCG[CG[fcl]]);
-				Rectangle(memHdc,
+				SelectObject(hDCTabTFB, hPenMirakel[BRUSH_GRAY]);
+				SelectObject(hDCTabTFB, hBrushCG[CG[fcl]]);
+				Rectangle(hDCTabTFB,
 					iTFBLeft + 2,
 					iTFBTop + fcl * 20 + 22,
 					iTFBLeft + 17,
@@ -169,28 +164,28 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 
 			if (strTFBContent.iShowFasestat != -1)
 			{
-				SelectObject(memHdc, hBrushMirakel[BRUSH_GRAY]);
-				Rectangle(memHdc,
+				SelectObject(hDCTabTFB, hBrushMirakel[BRUSH_GRAY]);
+				Rectangle(hDCTabTFB,
 					iTFBLeft,
 					iTFBBottom - iCharHeight - 4,
 					iTFBRight,
 					iTFBBottom);
-				SetTextColor(memHdc, RGB(0, 0, 0));
+				SetTextColor(hDCTabTFB, RGB(0, 0, 0));
 				if (strTFBContent.iShowFasestat < 0) strTFBContent.iShowFasestat = 0;
 				if (strTFBContent.iShowFasestat >= FC_MAX) strTFBContent.iShowFasestat = FC_MAX - 1;
 				status_phasecycles(strTFBContent.lpszFasestat, strTFBContent.iShowFasestat, 0);
-				SetBkMode(memHdc, TRANSPARENT);
-				TextOut(memHdc, iTFBLeft + 4, iTFBBottom - iCharHeight - 2, strTFBContent.lpszFasestat, strlen(strTFBContent.lpszFasestat));
-				SetBkMode(memHdc, OPAQUE);
+				SetBkMode(hDCTabTFB, TRANSPARENT);
+				TextOut(hDCTabTFB, iTFBLeft + 4, iTFBBottom - iCharHeight - 2, strTFBContent.lpszFasestat, strlen(strTFBContent.lpszFasestat));
+				SetBkMode(hDCTabTFB, OPAQUE);
 			}
 
-			SetTextColor(memHdc, blacktext);
+			SetTextColor(hDCTabTFB, blacktext);
 		}
 
 		BeginPaint(hWnd, &ps);
-		BitBlt(hdc, 0, 0, iTFBRight - iTFBLeft, iTFBBottom - iTFBTop, memHdc, 0, 0, SRCCOPY);
+		BitBlt(hdc, 0, 0, iTFBRight - iTFBLeft, iTFBBottom - iTFBTop, hDCTabTFB, 0, 0, SRCCOPY);
 		EndPaint(hWnd, &ps);
-		break;
+		return 0;
 	}
 	case WM_SIZE:
 	{
@@ -198,16 +193,24 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 		TabCtrl_AdjustRect(hMainTab, 0, &rect);
 		int width = rect.right - rect.left;
 		int height = rect.bottom - rect.top;
+		
 		SetWindowPos(hWnd, HWND_TOP, rect.left, rect.top, width, height, SWP_NOACTIVATE);
 		GetClientRect(hWnd, &rect);
-		InvalidateRect(hWnd, &rect, TRUE);
-		
+
 		iTFBTop = rect.top;
 		iTFBLeft = rect.left;
 		iTFBRight = rect.right;
 		iTFBBottom = rect.bottom;
+
+		hdc = GetDC(hWnd);
+		hDCTabTFB = CreateCompatibleDC(hdc);
+		hBitmapTFB = CreateCompatibleBitmap(hdc, iTFBRight - iTFBLeft, iTFBBottom - iTFBTop);
+		SelectObject(hDCTabTFB, hBitmapTFB);
+		ReleaseDC(hWnd, hdc);
 		
-		break;
+		InvalidateRect(hWnd, &rect, TRUE);
+
+		return 0;
 	}
 	case WM_NOTIFY:
 		break;
