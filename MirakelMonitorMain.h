@@ -18,6 +18,7 @@
 #include "TabCounters.h"
 #ifdef EXTRAMON
     #include "TabTracerLog.h"
+    #include "TabParserPlus.h"
     //#include "TabFasenlog.h"
 #endif
 
@@ -28,8 +29,9 @@
 #define TAB_SWITCHES    4
 #ifdef EXTRAMON
 	#define TAB_TRACERLOG   5
+	#define TAB_PARSERPLUS  6
 	//#define TAB_FASENLOG    3
-	#define TAB_MAX         6
+	#define TAB_MAX         7
 #else
 	#define TAB_MAX         5
 #endif
@@ -52,12 +54,13 @@ char lpszTemp1[SZBUFFERSIZE];
 const char * TAB_MAIN_TITLE[TAB_MAX] =
 {
 	"TFB",
-	"TM",
+	"TM",		
 	"CT",
 	"PRM",
 	"SCH",
 #ifdef EXTRAMON
 	"Trace",
+	"Parser",
 	//"Log",
 #endif
 };

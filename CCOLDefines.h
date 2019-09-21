@@ -218,7 +218,6 @@ extern short OG[];
 extern short BG[];
 extern short FL[];
 
-
 extern char ML;
 extern char SML;
 extern char DBOG;

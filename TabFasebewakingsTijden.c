@@ -185,6 +185,7 @@ LRESULT CALLBACK WindowProcTabWachttijden(HWND hWnd, UINT uMsg, WPARAM wParam, L
 		BeginPaint(hWnd, &ps);
 		BitBlt(hdc, 0, 0, iTFBRight - iTFBLeft, iTFBBottom - iTFBTop, hDCTabTFB, 0, 0, SRCCOPY);
 		EndPaint(hWnd, &ps);
+		ReleaseDC(hWnd, hdc);
 		return 0;
 	}
 	case WM_SIZE:

@@ -148,7 +148,6 @@ int MirakelMonitor_init(char * lpWindowName)
 	WNDCLASS wc;
 	char name[128];
 	DWORD dwStyle;
-	CREATESTRUCT css;
 	INITCOMMONCONTROLSEX icex;
 
 	dwStyle = (DWORD)(WS_VISIBLE | WS_SIZEBOX | WS_OVERLAPPEDWINDOW);
@@ -177,7 +176,7 @@ int MirakelMonitor_init(char * lpWindowName)
 		hParent,    // Parent window    
 		NULL,       // Menu
 		hMainInstance,  // Instance handle
-		&css        // Additional application data
+		NULL        // Additional application data
 	);
 
 	if (hMainWin == NULL)
@@ -187,7 +186,7 @@ int MirakelMonitor_init(char * lpWindowName)
 
 	// Initialize common controls.
 	icex.dwSize = sizeof(icex);
-	icex.dwICC = ICC_TAB_CLASSES | ICC_WIN95_CLASSES;
+	icex.dwICC = ICC_TAB_CLASSES | ICC_LISTVIEW_CLASSES;
 	InitCommonControlsEx(&icex);
 
 	Initialize(hMainWin);
@@ -203,14 +202,10 @@ int MirakelMonitor_init(char * lpWindowName)
 	hTabs[TAB_WACHTTIJDEN] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabWachttijdClass", (WNDPROC)WindowProcTabWachttijden);
 #ifdef EXTRAMON
 	hTabs[TAB_TRACERLOG] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabTracerLogClass", (WNDPROC)WindowProcTabTracerLog);
+	hTabs[TAB_PARSERPLUS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabParserPlusClass", (WNDPROC)WindowProcTabParserPlus);
 	//hTabs[TAB_FASENLOG] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabFasenlogClass", (WNDPROC)WindowProcTabFasenlog);
 #endif
-
-	for (int i = 0; i < TAB_MAX; i++)
-	{
-		SetParent(hTabs[i], hMainTab);
-	}
-
+	
 	int iPage = TabCtrl_GetCurSel(hMainTab);
 
 	for (int i = 0; i < TAB_MAX; i++)
@@ -230,22 +225,22 @@ void MirakelMonitor()
 
 	if (!bInitialized) return;
 
-	if (CCOL_Time_Speed_Halt & 0x10 ||
+	if (//CCOL_Time_Speed_Halt & 0x10 ||
 		CCOL_Time_Speed_Halt == 1 ||
 		CCOL_Time_Speed_Halt == 2 && update_monitor % 2 == 0 ||
 		CCOL_Time_Speed_Halt == 3 && update_monitor % 5 == 0 ||
-		CCOL_Time_Speed_Halt == 4 && update_monitor == 0 /*||
+		CCOL_Time_Speed_Halt == 4 && update_monitor == 0 ||
 		((CCOL_Time_Speed_Halt == 5 || CCOL_Time_Speed_Halt == 6) && 
-		 (last_clock == 0 || (clock() - last_clock) >= (CLOCKS_PER_SEC / 10)))*/)
+		 (last_clock == 0 || (clock() - last_clock) >= (CLOCKS_PER_SEC / 10))))
 	{
 		TabTimersUpdate();
 		TabCountersUpdate();
 		TabParametersUpdate();
 		TabSwitchesUpdate();
-		//if (CCOL_Time_Speed_Halt == 5 || CCOL_Time_Speed_Halt == 6)
-		//{
-		//	last_clock = clock();
-		//}
+		if (CCOL_Time_Speed_Halt == 5 || CCOL_Time_Speed_Halt == 6)
+		{
+			last_clock = clock();
+		}
 
 		if (iSelectedTab == TAB_WACHTTIJDEN)
 		{
@@ -264,6 +259,7 @@ void MirakelMonitor()
 	TabWachttijdenUpdate();
 #ifdef EXTRAMON
 	TabTracerLogUpdate();
+	TabParserPlusUpdate();
 #endif
 	++update_monitor;
 	if (update_monitor == 10) update_monitor = 0;

@@ -83,10 +83,10 @@ LRESULT CALLBACK WindowProcTabCounters(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		int width = rect.right - rect.left;
 		int height = rect.bottom - rect.top;
 		SetWindowPos(hWnd, HWND_TOP, rect.left, rect.top, width, height, SWP_NOACTIVATE);
-		GetClientRect(hWnd, &rect);
 
 		if (hWndCountersDataGrid)
 		{
+			GetClientRect(hWnd, &rect);
 			SendMessage(hWndCountersDataGrid, WM_SIZE, (WPARAM)SIZE_RESTORED, MAKELPARAM(rect.right - rect.left - 6, rect.bottom - rect.top - 6));
 			InvalidateRect(hMainTab, &rect, TRUE);
 		}
