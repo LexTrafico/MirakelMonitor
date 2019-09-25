@@ -54,3 +54,17 @@ ATOM RegisterSomeClass(HINSTANCE hInstance, char * className, WNDPROC proc);
 HTREEITEM AddItemToTree(HWND hwndTV, LPTSTR lpszItem, HTREEITEM hParent, int num);
 
 #define MIRMSG_TABCHANGE WM_USER + 0x13
+
+/* Parser plus controls */
+#define PPEDIT 10090
+#define PPLOG  10091
+
+/* Tracer buttons */
+#define BUTTONDELTRACE	 10101
+#define BUTTONTRACEUP	 10102
+#define BUTTONTRACEDOWN	 10103
+#define BUTTONLOGZOOMIN  10104
+#define BUTTONLOGZOOMSW  10105
+#define BUTTONLOGZOOMUIT 10106
+#define DEBUGCOMBOTYPE	 10107
+#define DEBUGCOMBOELEM	 10108

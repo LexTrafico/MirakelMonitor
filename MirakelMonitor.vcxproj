@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXTRAMON;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -162,7 +162,9 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TabFasebewakingsTijden.h" />
     <ClInclude Include="TabParameters.h" />
+    <ClInclude Include="TabParserPlus.h" />
     <ClInclude Include="TabSwitches.h" />
+    <ClInclude Include="TabTracerLog.h" />
     <ClInclude Include="TabTimers.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -170,6 +172,7 @@
     <ClCompile Include="DataGridView.c" />
     <ClCompile Include="MirakelMonitorMain.c" />
     <ClCompile Include="MirakelMonitorUtilities.c" />
+    <ClCompile Include="TabParserPlus.c" />
     <ClCompile Include="TabSwitches.c" />
     <ClCompile Include="stdafx.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -182,6 +185,7 @@
     <ClCompile Include="TabFasebewakingsTijden.c" />
     <ClCompile Include="TabParameters.c" />
     <ClCompile Include="TabTimers.c" />
+    <ClCompile Include="TabTracerLog.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

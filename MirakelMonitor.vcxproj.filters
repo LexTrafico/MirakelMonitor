@@ -57,6 +57,12 @@
     <ClInclude Include="TabSwitches.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TabTracerLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TabParserPlus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MirakelMonitorMain.c">
@@ -87,6 +93,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TabSwitches.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabTracerLog.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabParserPlus.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

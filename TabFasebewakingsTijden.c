@@ -258,6 +258,7 @@ void TabWachttijdenUpdate()
 				pstrTFBMonitor[fc].iTFBGemiddeld = (int)((double)pstrTFBMonitor[fc].ulTFBTotal / (double)pstrTFBMonitor[fc].iTFBCount);
 				if (gemOld != pstrTFBMonitor[fc].iTFBGemiddeld)
 				{
+					// TODO this overwrites the MAX date...
 					sprintf_s(lpszTemp1, SZBUFFERSIZE, "FC%s - Max: %d (%2.2d-%2.2d-%4d %2.2d:%2.2d:%2.2d) Gem.: %d",
 						FC_code[fc], pstrTFBMonitor[fc].iTFBMax,
 						CIF_KLOK[_CIF_DAG], CIF_KLOK[_CIF_MAAND], CIF_KLOK[_CIF_JAAR],
