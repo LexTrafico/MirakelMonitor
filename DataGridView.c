@@ -1790,7 +1790,8 @@ void DataGridView_SetCellValue(HWND hWnd, int row, int col, const char * string)
 	Grid_GetInstanceData(hWnd, &g_lpInst);
 	ListView_SetItemText(g_lpInst->hwndList, row, col, string);
 	// Get the first selected item
-	if (g_lpInst->hti.iItem == row)
+	// TODO: col here should check if it is a readonly column
+	if (g_lpInst->hti.iItem == row && col != 1)
 			Edit_SetText(g_lpInst->hwndEditor, string);
 	//	itemint = SendMessage(g_lpInst->hwndList, LVM_GETNEXTITEM, itemint, LVNI_SELECTED);
 	

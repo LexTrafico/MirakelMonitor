@@ -16,6 +16,8 @@
 #include "TabSwitches.h"
 #include "TabTimers.h"
 #include "TabCounters.h"
+#include "TabMemoryElements.h"
+#include "TabHelpElements.h"
 #ifdef EXTRAMON
     #include "TabTracerLog.h"
     #include "TabParserPlus.h"
@@ -27,13 +29,15 @@
 #define TAB_COUNTERS    2
 #define TAB_PARAMETERS  3
 #define TAB_SWITCHES    4
+#define TAB_MEMORYELEMS 5
+#define TAB_HELPELEMS   6
 #ifdef EXTRAMON
-	#define TAB_TRACERLOG   5
-	#define TAB_PARSERPLUS  6
+	#define TAB_TRACERLOG   7
+	#define TAB_PARSERPLUS  8
 	//#define TAB_FASENLOG    3
-	#define TAB_MAX         7
+	#define TAB_MAX         9
 #else
-	#define TAB_MAX         5
+	#define TAB_MAX         7
 #endif
 
 HWND hParent = NULL;
@@ -58,6 +62,8 @@ const char * TAB_MAIN_TITLE[TAB_MAX] =
 	"CT",
 	"PRM",
 	"SCH",
+	"MM",
+	"HE",
 #ifdef EXTRAMON
 	"Trace",
 	"Parser",

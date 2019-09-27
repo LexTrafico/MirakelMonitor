@@ -200,6 +200,8 @@ int MirakelMonitor_init(char * lpWindowName)
 	hTabs[TAB_PARAMETERS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabParametersClass", (WNDPROC)WindowProcTabParameters);
 	hTabs[TAB_SWITCHES] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabSwitchesClass", (WNDPROC)WindowProcTabSwitches);
 	hTabs[TAB_WACHTTIJDEN] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabWachttijdClass", (WNDPROC)WindowProcTabWachttijden);
+	hTabs[TAB_MEMORYELEMS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabMemoryElemsClass", (WNDPROC)WindowProcTabMemoryElements);
+	hTabs[TAB_HELPELEMS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabHelpElemsClass", (WNDPROC)WindowProcTabHelpElements);
 #ifdef EXTRAMON
 	hTabs[TAB_TRACERLOG] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabTracerLogClass", (WNDPROC)WindowProcTabTracerLog);
 	hTabs[TAB_PARSERPLUS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabParserPlusClass", (WNDPROC)WindowProcTabParserPlus);
@@ -237,6 +239,8 @@ void MirakelMonitor()
 		TabCountersUpdate();
 		TabParametersUpdate();
 		TabSwitchesUpdate();
+		TabMemoryElementsUpdate();
+		TabHelpElementsUpdate();
 		if (CCOL_Time_Speed_Halt == 5 || CCOL_Time_Speed_Halt == 6)
 		{
 			last_clock = clock();

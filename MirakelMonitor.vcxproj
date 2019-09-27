@@ -161,6 +161,8 @@
     <ClInclude Include="MirakelMonitorUtilities.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TabFasebewakingsTijden.h" />
+    <ClInclude Include="TabHelpElements.h" />
+    <ClInclude Include="TabMemoryElements.h" />
     <ClInclude Include="TabParameters.h" />
     <ClInclude Include="TabParserPlus.h" />
     <ClInclude Include="TabSwitches.h" />
@@ -172,6 +174,8 @@
     <ClCompile Include="DataGridView.c" />
     <ClCompile Include="MirakelMonitorMain.c" />
     <ClCompile Include="MirakelMonitorUtilities.c" />
+    <ClCompile Include="TabHelpElements.c" />
+    <ClCompile Include="TabMemoryElements.c" />
     <ClCompile Include="TabParserPlus.c" />
     <ClCompile Include="TabSwitches.c" />
     <ClCompile Include="stdafx.c">

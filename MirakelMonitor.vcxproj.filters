@@ -63,6 +63,12 @@
     <ClInclude Include="TabParserPlus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TabHelpElements.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TabMemoryElements.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MirakelMonitorMain.c">
@@ -99,6 +105,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TabParserPlus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabHelpElements.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabMemoryElements.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
