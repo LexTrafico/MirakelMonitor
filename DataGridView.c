@@ -428,13 +428,17 @@ HBRUSH SetColor(COLORREF TxtColr, COLORREF BkColr, HDC hdc)
 
 HBRUSH Grid_OnCtlColorEdit(HWND hwnd, HDC hdc, HWND hwndChild, INT type)
 {
-	//menno: set color based on state 
-	if (g_lpInst->hwndEditor == hwndChild)
-	{
-		int c = g_lpInst->pfnChangedCB(g_lpInst->hti.iItem);
-		if (c == 1)
-			return SetColor(g_lpInst->Editor_TxtColr, g_lpInst->Editor_ChangedBkColr, hdc);
-		else if (c == 2)
+		//menno: set color based on state 
+		if (g_lpInst->hwndEditor == hwndChild)
+		{
+			int c = 0;
+			if (g_lpInst->pfnChangedCB != NULL)
+			{
+				c = g_lpInst->pfnChangedCB(g_lpInst->hti.iItem);
+			}
+			if (c == 1)
+				return SetColor(g_lpInst->Editor_TxtColr, g_lpInst->Editor_ChangedBkColr, hdc);
+			else if (c == 2)
 			return SetColor(g_lpInst->Editor_TxtColr, g_lpInst->Editor_FaultyBkColr, hdc);
 		else
 			return SetColor(g_lpInst->Editor_TxtColr, g_lpInst->Editor_BkColr, hdc);
@@ -941,8 +945,12 @@ LRESULT Grid_OnCustomDraw(HWND hwnd, LPNMLVCUSTOMDRAW lplvcd)
 
 	case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
 	{
-		// Color Rows with changed values
-		int c = g_lpInst->pfnChangedCB(lplvcd->nmcd.dwItemSpec);
+		int c = 0;
+		if(g_lpInst->pfnChangedCB != NULL)
+		{
+			// Color Rows with changed values
+			c = g_lpInst->pfnChangedCB(lplvcd->nmcd.dwItemSpec);
+		}
 		if (c == 1)
 		{
 			lplvcd->clrText = g_lpInst->Cell_ChangedTxtColr;
@@ -973,7 +981,11 @@ LRESULT Grid_OnCustomDraw(HWND hwnd, LPNMLVCUSTOMDRAW lplvcd)
 		// Color active cell
 		if (lplvcd->iSubItem == g_lpInst->hti.iSubItem && lplvcd->nmcd.dwItemSpec == g_lpInst->hti.iItem)
 		{
-			int c = g_lpInst->pfnChangedCB(g_lpInst->hti.iItem);
+			int c = 0;
+			if (g_lpInst->pfnChangedCB != NULL)
+			{
+				g_lpInst->pfnChangedCB(g_lpInst->hti.iItem);
+			}
 			// color active cell accordingly if value has been changed
 			if (c == 1)
 			{
@@ -1791,7 +1803,7 @@ void DataGridView_SetCellValue(HWND hWnd, int row, int col, const char * string)
 	ListView_SetItemText(g_lpInst->hwndList, row, col, string);
 	// Get the first selected item
 	// TODO: col here should check if it is a readonly column
-	if (g_lpInst->hti.iItem == row && col != 1)
+	if (g_lpInst->hti.iItem == row && col == 1)
 			Edit_SetText(g_lpInst->hwndEditor, string);
 	//	itemint = SendMessage(g_lpInst->hwndList, LVM_GETNEXTITEM, itemint, LVNI_SELECTED);
 	

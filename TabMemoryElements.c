@@ -12,7 +12,7 @@ DWORD WINAPI AddRemainingMemoryElements(int rtm)
 	Sleep(500);
 	for (int ct = rtm; ct < ME_MAX; ++ct)
 	{
-		strcpy_s(temp[0], 32, M_code[ct]);
+		strcpy_s(temp[0], 32, MM_code[ct]);
 		sprintf_s(temp[1], 32, "%d", MM[ct]);
 		DataGridView_AddRow(hWndMemoryElementsDataGrid, (LPSTR)temp, 2);
 	}
@@ -41,10 +41,10 @@ LRESULT CALLBACK WindowProcTabMemoryElements(HWND hWnd, UINT uMsg, WPARAM wParam
 		int me = 0;
 		for (me = 0; me < ME_MAX; ++me)
 		{
-			strcpy_s(temp[0], 32, M_code[ct]);
-			sprintf_s(temp[1], 32, "%d", MM[ct]);
+			strcpy_s(temp[0], 32, MM_code[me]);
+			sprintf_s(temp[1], 32, "%d", MM[me]);
 			DataGridView_AddRow(hWndMemoryElementsDataGrid, (LPSTR)temp, 2);
-			ListView_GetItemRect(hWndMemoryElementsDataGrid, ct, &irect, LVIR_BOUNDS);
+			ListView_GetItemRect(hWndMemoryElementsDataGrid, me, &irect, LVIR_BOUNDS);
 			if (irect.bottom >= rect.bottom - 6) break;
 		}
 		CreateThread(
@@ -109,7 +109,7 @@ void TabMemoryElementsUpdate()
 	int c2 = ListView_GetColumnWidth(hWndMemoryElementsDataGrid, 1);
 
 	int top = ListView_GetTopIndex(hWndMemoryElementsDataGrid);
-	ListView_GetItemRect(hWndMemoryElementsDataGrid, top, topRect, LVIR_BOUNDS);
+	ListView_GetItemRect(hWndMemoryElementsDataGrid, top, &topRect, LVIR_BOUNDS);
 	RECT winRect;
 	GetWindowRect(hWndMemoryElementsDataGrid, &winRect);
 
