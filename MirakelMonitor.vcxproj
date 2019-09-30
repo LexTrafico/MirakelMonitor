@@ -190,6 +190,7 @@
     <ClCompile Include="TabParameters.c" />
     <ClCompile Include="TabTimers.c" />
     <ClCompile Include="TabTracerLog.c" />
+    <ClCompile Include="TabTracerLogLoggerPanel.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

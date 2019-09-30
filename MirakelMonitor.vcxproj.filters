@@ -113,6 +113,9 @@
     <ClCompile Include="TabMemoryElements.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TabTracerLogLoggerPanel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
