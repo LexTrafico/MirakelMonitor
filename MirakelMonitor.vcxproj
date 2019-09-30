@@ -168,6 +168,7 @@
     <ClInclude Include="TabSwitches.h" />
     <ClInclude Include="TabTracerLog.h" />
     <ClInclude Include="TabTimers.h" />
+    <ClInclude Include="TabTracerLogLoggerPanel.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
