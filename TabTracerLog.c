@@ -1,5 +1,6 @@
 #include "TabTracerLog.h"
 
+static HWND hLogWnd;
 static HFONT hTimeLabelFont;
 static HFONT hItemLabelFont;
 static int cDebug_CBtype;
@@ -87,6 +88,20 @@ LRESULT CALLBACK WindowProcTabTracerLog(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			0, "BUTTON", "-", WS_CHILD,
 			iTracerLeft + 25 + 380, iTracerTop + 5, 40, 25,
 			hWnd, (HMENU)BUTTONLOGZOOMUIT, hMainInstance, NULL);
+
+		RegisterSomeClass(hMainInstance, "TabTracerLogLoggerPanel", (WNDPROC)wProc);
+		int e = GetLastError();
+		GetClientRect(hwndTab, &r);
+		TabCtrl_AdjustRect(hwndTab, 0, &r);
+		HWND hWnd = CreateWindow(
+			pcClassName, "",
+			WS_CHILD,
+			r.left, r.top, r.right - r.left, r.bottom - r.top,
+			hwndTab, NULL, hInstance, NULL);
+		e = GetLastError();
+		return hWnd;
+
+		hTabs[TAB_HELPELEMS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabHelpElemsClass", (WNDPROC)WindowProcTabHelpElements);
 
 		InvalidateRect(hWnd, NULL, TRUE);
 
