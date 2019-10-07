@@ -22,6 +22,8 @@ static int tracer_count = 0;
 extern int trindex;
 static char tracer_bloklog[TRACERBUFFERSIZE];
 static char tracerchanged = 0;
+static HDC hDCTabLoggerPanel;
+static HBITMAP hBitmapTabLoggerPanel;
 
 HWND CreateTabTracerLogLoggerPanel(HWND hwnd, HINSTANCE hInstance, RECT * r, TRACERLAYOUT * tracerl, TRACERSTRUCT ** tr)
 {
@@ -46,8 +48,6 @@ LRESULT CALLBACK WindowProcTabTracerLogLoggerPanel(HWND hWnd, UINT uMsg, WPARAM 
 {
 	RECT rect;
 	HDC hdc;
-	HDC memHdc;
-	HBITMAP bufBMP;
 	PAINTSTRUCT ps;
 
 	switch (uMsg)
@@ -90,6 +90,12 @@ LRESULT CALLBACK WindowProcTabTracerLogLoggerPanel(HWND hWnd, UINT uMsg, WPARAM 
 		}
 		iHscrollPosTRA = iHscrollPos < 0 ? iHscrollMax : iHscrollPos;
 
+		hdc = GetDC(hWnd);
+		hDCTabLoggerPanel = CreateCompatibleDC(hdc);
+		hBitmapTabLoggerPanel = CreateCompatibleBitmap(hdc, iTracerLogRight - iTracerLogLeft, iTracerLogBottom - iTracerLogTop);
+		SelectObject(hDCTabLoggerPanel, hBitmapTabLoggerPanel);
+		ReleaseDC(hWnd, hdc);
+
 		return 0;
 	case WM_PAINT:
 		
@@ -98,62 +104,59 @@ LRESULT CALLBACK WindowProcTabTracerLogLoggerPanel(HWND hWnd, UINT uMsg, WPARAM 
 		GetClientRect(hWnd, &rect);
 
 		hdc = GetDC(hWnd);
-		memHdc = CreateCompatibleDC(hdc);
-		bufBMP = CreateCompatibleBitmap(hdc, iTracerLogRight - iTracerLogLeft, iTracerLogBottom - iTracerLogTop);
-		SelectObject(memHdc, bufBMP);
 
 		int left = iTracerLogLeft;
 		int top = iTracerLogTop;
 		int right = iTracerLogRight;
 		int bottom = iTracerLogBottom;
 
-		SelectObject(memHdc, hPenMirakel[BRUSH_GRAY]);
-		SelectObject(memHdc, hBrushMirakel[BRUSH_GRAY]);
-		Rectangle(memHdc,
+		SelectObject(hDCTabLoggerPanel, hPenMirakel[BRUSH_GRAY]);
+		SelectObject(hDCTabLoggerPanel, hBrushMirakel[BRUSH_GRAY]);
+		Rectangle(hDCTabLoggerPanel,
 			0,
 			top,
 			iTracerLogRight,
 			bottom);
-		SelectObject(memHdc, hPenMirakel[BRUSH_LIGHTGRAY]);
-		SelectObject(memHdc, hBrushMirakel[BRUSH_LIGHTGRAY]);
-		Rectangle(memHdc,
+		SelectObject(hDCTabLoggerPanel, hPenMirakel[BRUSH_LIGHTGRAY]);
+		SelectObject(hDCTabLoggerPanel, hBrushMirakel[BRUSH_LIGHTGRAY]);
+		Rectangle(hDCTabLoggerPanel,
 			0,
 			top,
 			right,
 			bottom);
 
-		SelectObject(memHdc, GetStockObject(NULL_PEN));
-		//SelectObject(memHdc, hItemLabelFont);
+		SelectObject(hDCTabLoggerPanel, GetStockObject(NULL_PEN));
+		//SelectObject(hDCTabLoggerPanel, hItemLabelFont);
 
 		for (int tr = 0; tr < TRACES_MAX; ++tr)
 		{
 			if (tracer[tr])
 			{
-				tabDebugTracer_paint_trace(memHdc, tr, left, top + tracer[tr]->place * tracerlayout->fc_height, right, bottom);
+				tabDebugTracer_paint_trace(hDCTabLoggerPanel, tr, left, top + tracer[tr]->place * tracerlayout->fc_height, right, bottom);
 			}
 		}
 		/* Bovenkant van de log schoonvegen voor schrijven time stamps */
-		SelectObject(memHdc, hBrushMirakel[BRUSH_LIGHTGRAY]);
-		SelectObject(memHdc, hPenMirakel[BRUSH_LIGHTGRAY]);
-		Rectangle(memHdc, left + 1, top, right - 1, top + 22);
+		SelectObject(hDCTabLoggerPanel, hBrushMirakel[BRUSH_LIGHTGRAY]);
+		SelectObject(hDCTabLoggerPanel, hPenMirakel[BRUSH_LIGHTGRAY]);
+		Rectangle(hDCTabLoggerPanel, left + 1, top, right - 1, top + 22);
 		/* Laden juist text layout */
-		SelectObject(memHdc, hTimeLabelFont);
-		SelectObject(memHdc, hPenMirakel[BRUSH_LIGHTGRAY]);
+		SelectObject(hDCTabLoggerPanel, hTimeLabelFont);
+		SelectObject(hDCTabLoggerPanel, hPenMirakel[BRUSH_LIGHTGRAY]);
 		if (tracerzoom == tracerzoom_TSEC)
 		{
 			for (int j = ((iHscrollMax - iHscrollPos) * tracerzoom) * tracerlayout->timestep + right - ((CIF_KLOK[_CIF_TSEC_TELLER]) % tracerlayout->timeline) * tracerlayout->timestep;
 				j > left + tracerlayout->pad_left;
 				j -= tracerlayout->timestep * tracerlayout->timeline)
 			{
-				MoveToEx(memHdc, j, top, NULL);
-				LineTo(memHdc, j, bottom);
+				MoveToEx(hDCTabLoggerPanel, j, top, NULL);
+				LineTo(hDCTabLoggerPanel, j, bottom);
 				trlogtempsec = ((((iHscrollMax - iHscrollPos) * tracerzoom) * tracerlayout->timestep + right - j) / tracerlayout->timestep);
 				trlogtime = ((CIF_KLOK[_CIF_UUR] * 3600) + (CIF_KLOK[_CIF_MINUUT] * 60) + CIF_KLOK[_CIF_SECONDE]) - (trlogtempsec / 10);
 				trlogtempsec = CIF_KLOK[_CIF_SECONDE];
 				sprintf_s(trlogtimestamp, SZBUFFERSIZE, "%2.2d:%2.2d:%2.2d", trlogtime / 3600, (trlogtime % 3600) / 60, (trlogtime % 3600) % 60);
-				SetBkMode(memHdc, TRANSPARENT);
-				TextOut(memHdc, j, top, trlogtimestamp, strlen(trlogtimestamp));
-				SetBkMode(memHdc, OPAQUE);
+				SetBkMode(hDCTabLoggerPanel, TRANSPARENT);
+				TextOut(hDCTabLoggerPanel, j, top, trlogtimestamp, strlen(trlogtimestamp));
+				SetBkMode(hDCTabLoggerPanel, OPAQUE);
 			}
 		}
 		else if (tracerzoom == tracerzoom_SEC)
@@ -162,24 +165,25 @@ LRESULT CALLBACK WindowProcTabTracerLogLoggerPanel(HWND hWnd, UINT uMsg, WPARAM 
 				j > left + tracerlayout->pad_left;
 				j -= tracerlayout->timestep * tracerlayout->timeline)
 			{
-				MoveToEx(memHdc, j, top + tracerlayout->pad_top, NULL);
-				LineTo(memHdc, j, bottom);
+				MoveToEx(hDCTabLoggerPanel, j, top + tracerlayout->pad_top, NULL);
+				LineTo(hDCTabLoggerPanel, j, bottom);
 				trlogtempsec = (((((iHscrollMax - iHscrollPos) * tracerzoom) * tracerlayout->timestep) / 10) + right - tracerlayout->pad_right - j) / tracerlayout->timestep;
 				trlogtime = ((CIF_KLOK[_CIF_UUR] * 3600) + (CIF_KLOK[_CIF_MINUUT] * 60) + CIF_KLOK[_CIF_SECONDE]) - trlogtempsec;
 				trlogtempsec = CIF_KLOK[_CIF_SECONDE];
 				sprintf_s(trlogtimestamp, SZBUFFERSIZE, "%2.2d:%2.2d:%2.2d", trlogtime / 3600, (trlogtime % 3600) / 60, (trlogtime % 3600) % 60);
-				SetBkMode(memHdc, TRANSPARENT);
-				TextOut(memHdc, j, top, trlogtimestamp, strlen(trlogtimestamp));
-				SetBkMode(memHdc, OPAQUE);
+				SetBkMode(hDCTabLoggerPanel, TRANSPARENT);
+				TextOut(hDCTabLoggerPanel, j, top, trlogtimestamp, strlen(trlogtimestamp));
+				SetBkMode(hDCTabLoggerPanel, OPAQUE);
 			}
 		}
 
 		BeginPaint(hWnd, &ps);
-		BitBlt(hdc, 0, 0, iTracerLogRight - iTracerLogLeft, iTracerLogBottom - iTracerLogTop, memHdc, 0, 0, SRCCOPY);
+		BitBlt(hdc, 0, 0, iTracerLogRight - iTracerLogLeft, iTracerLogBottom - iTracerLogTop, hDCTabLoggerPanel, 0, 0, SRCCOPY);
 		EndPaint(hWnd, &ps);
 		ReleaseDC(hWnd, hdc);
 		return 0;
 	}
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 void tabDebugTracer_paint_trace(HDC hDC, INT trace, INT left, INT top, INT right, INT bottom)
