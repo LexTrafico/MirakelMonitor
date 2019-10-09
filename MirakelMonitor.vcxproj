@@ -168,6 +168,7 @@
     <ClInclude Include="TabSwitches.h" />
     <ClInclude Include="TabTracerLog.h" />
     <ClInclude Include="TabTimers.h" />
+    <ClInclude Include="TabTracerLogLabelPanel.h" />
     <ClInclude Include="TabTracerLogLoggerPanel.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -190,6 +191,7 @@
     <ClCompile Include="TabFasebewakingsTijden.c" />
     <ClCompile Include="TabParameters.c" />
     <ClCompile Include="TabTimers.c" />
+    <ClCompile Include="TabTracerLogLabelPanel.c" />
     <ClCompile Include="TabTracerLog.c" />
     <ClCompile Include="TabTracerLogLoggerPanel.c" />
   </ItemGroup>

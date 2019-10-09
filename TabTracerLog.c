@@ -14,7 +14,7 @@ static char trlogtimestamp[128];
 
 static TRACERSTRUCT * tracer[TRACES_MAX];
 static int tracer_id = 0;
-static int tracer_count = 0;
+int tracer_count = 0;
 int trindex = 0;
 static char tracer_bloklog[TRACERBUFFERSIZE];
 static char tracerchanged = 0;
@@ -548,6 +548,12 @@ void SetItemWindowsPos(int i)
 	SetWindowPos(tracer[i]->downwin, HWND_TOP, iTracerRight - 45, iTracerTop + (tracer[i]->place + 1) * tracerlayout.fc_height + tracerlayout.text_top + 10, 20, 10, SWP_SHOWWINDOW);
 }
 
+void TabTracerLogRefresh()
+{
+	RECT rect;
+	GetClientRect(hLogWnd, &rect);
+	InvalidateRect(hLogWnd, &rect, TRUE);
+}
 
 void TabTracerLogUpdate()
 {
