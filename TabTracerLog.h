@@ -17,6 +17,7 @@
 LRESULT CALLBACK WindowProcTabTracerLog(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void TabTracerLogUpdate();
 void TabTracerLogReset();
+void TabTracerLogRefresh();
 void tabDebugTracer_key(HWND hWnd, DWORD wKey);
 void tabDebugTracer_newTrace(HWND hWnd, int _type, int _elem);
 void tabDebugTracer_newTrace_create(HWND hWnd, int _type, int _elem, int _place);

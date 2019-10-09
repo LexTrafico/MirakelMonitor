@@ -254,8 +254,7 @@ void MirakelMonitor()
 #ifdef EXTRAMON
 		if (iSelectedTab == TAB_TRACERLOG)
 		{
-			GetClientRect(hTabs[TAB_TRACERLOG], &rect);
-			InvalidateRect(hTabs[TAB_TRACERLOG], &rect, TRUE);
+			TabTracerLogRefresh();
 		}
 #endif
 	}

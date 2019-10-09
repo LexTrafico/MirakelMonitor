@@ -72,6 +72,9 @@
     <ClInclude Include="TabTracerLogLoggerPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TabTracerLogLabelPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MirakelMonitorMain.c">
@@ -117,6 +120,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TabTracerLogLoggerPanel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabTracerLogLabelPanel.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

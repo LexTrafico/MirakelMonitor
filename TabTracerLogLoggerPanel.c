@@ -18,10 +18,12 @@ static int iHscrollMin;
 static int trlogtempsec, trlogtime;
 static char trlogtimestamp[128];
 static int tracer_id = 0;
-static int tracer_count = 0;
+extern int tracer_count;
 extern int trindex;
 static char tracer_bloklog[TRACERBUFFERSIZE];
 static char tracerchanged = 0;
+static HDC hDCTabLoggerPanel;
+static HBITMAP hBitmapTabLoggerPanel;
 
 HWND CreateTabTracerLogLoggerPanel(HWND hwnd, HINSTANCE hInstance, RECT * r, TRACERLAYOUT * tracerl, TRACERSTRUCT ** tr)
 {
@@ -46,8 +48,6 @@ LRESULT CALLBACK WindowProcTabTracerLogLoggerPanel(HWND hWnd, UINT uMsg, WPARAM 
 {
 	RECT rect;
 	HDC hdc;
-	HDC memHdc;
-	HBITMAP bufBMP;
 	PAINTSTRUCT ps;
 
 	switch (uMsg)
@@ -90,6 +90,12 @@ LRESULT CALLBACK WindowProcTabTracerLogLoggerPanel(HWND hWnd, UINT uMsg, WPARAM 
 		}
 		iHscrollPosTRA = iHscrollPos < 0 ? iHscrollMax : iHscrollPos;
 
+		hdc = GetDC(hWnd);
+		hDCTabLoggerPanel = CreateCompatibleDC(hdc);
+		hBitmapTabLoggerPanel = CreateCompatibleBitmap(hdc, iTracerLogRight - iTracerLogLeft, iTracerLogBottom - iTracerLogTop);
+		SelectObject(hDCTabLoggerPanel, hBitmapTabLoggerPanel);
+		ReleaseDC(hWnd, hdc);
+
 		return 0;
 	case WM_PAINT:
 		
@@ -98,88 +104,86 @@ LRESULT CALLBACK WindowProcTabTracerLogLoggerPanel(HWND hWnd, UINT uMsg, WPARAM 
 		GetClientRect(hWnd, &rect);
 
 		hdc = GetDC(hWnd);
-		memHdc = CreateCompatibleDC(hdc);
-		bufBMP = CreateCompatibleBitmap(hdc, iTracerLogRight - iTracerLogLeft, iTracerLogBottom - iTracerLogTop);
-		SelectObject(memHdc, bufBMP);
 
 		int left = iTracerLogLeft;
 		int top = iTracerLogTop;
 		int right = iTracerLogRight;
 		int bottom = iTracerLogBottom;
 
-		SelectObject(memHdc, hPenMirakel[BRUSH_GRAY]);
-		SelectObject(memHdc, hBrushMirakel[BRUSH_GRAY]);
-		Rectangle(memHdc,
+		SelectObject(hDCTabLoggerPanel, hPenMirakel[BRUSH_GRAY]);
+		SelectObject(hDCTabLoggerPanel, hBrushMirakel[BRUSH_GRAY]);
+		Rectangle(hDCTabLoggerPanel,
 			0,
 			top,
 			iTracerLogRight,
 			bottom);
-		SelectObject(memHdc, hPenMirakel[BRUSH_LIGHTGRAY]);
-		SelectObject(memHdc, hBrushMirakel[BRUSH_LIGHTGRAY]);
-		Rectangle(memHdc,
+		SelectObject(hDCTabLoggerPanel, hPenMirakel[BRUSH_LIGHTGRAY]);
+		SelectObject(hDCTabLoggerPanel, hBrushMirakel[BRUSH_LIGHTGRAY]);
+		Rectangle(hDCTabLoggerPanel,
 			0,
 			top,
 			right,
 			bottom);
 
-		SelectObject(memHdc, GetStockObject(NULL_PEN));
-		//SelectObject(memHdc, hItemLabelFont);
+		SelectObject(hDCTabLoggerPanel, GetStockObject(NULL_PEN));
+		//SelectObject(hDCTabLoggerPanel, hItemLabelFont);
 
 		for (int tr = 0; tr < TRACES_MAX; ++tr)
 		{
 			if (tracer[tr])
 			{
-				tabDebugTracer_paint_trace(memHdc, tr, left, top + tracer[tr]->place * tracerlayout->fc_height, right, bottom);
+				tabDebugTracer_paint_trace(hDCTabLoggerPanel, tr, left, top + tracer[tr]->place * tracerlayout->fc_height, right, bottom);
 			}
 		}
 		/* Bovenkant van de log schoonvegen voor schrijven time stamps */
-		SelectObject(memHdc, hBrushMirakel[BRUSH_LIGHTGRAY]);
-		SelectObject(memHdc, hPenMirakel[BRUSH_LIGHTGRAY]);
-		Rectangle(memHdc, left + 1, top, right - 1, top + 22);
+		SelectObject(hDCTabLoggerPanel, hBrushMirakel[BRUSH_LIGHTGRAY]);
+		SelectObject(hDCTabLoggerPanel, hPenMirakel[BRUSH_LIGHTGRAY]);
+		Rectangle(hDCTabLoggerPanel, left + 1, top, right - 1, top + 22);
 		/* Laden juist text layout */
-		SelectObject(memHdc, hTimeLabelFont);
-		SelectObject(memHdc, hPenMirakel[BRUSH_LIGHTGRAY]);
+		SelectObject(hDCTabLoggerPanel, hTimeLabelFont);
+		SelectObject(hDCTabLoggerPanel, hPenMirakel[BRUSH_GRAY]);
 		if (tracerzoom == tracerzoom_TSEC)
 		{
 			for (int j = ((iHscrollMax - iHscrollPos) * tracerzoom) * tracerlayout->timestep + right - ((CIF_KLOK[_CIF_TSEC_TELLER]) % tracerlayout->timeline) * tracerlayout->timestep;
-				j > left + tracerlayout->pad_left;
+				j > left - (tracerlayout->timestep * tracerlayout->timeline);
 				j -= tracerlayout->timestep * tracerlayout->timeline)
 			{
-				MoveToEx(memHdc, j, top, NULL);
-				LineTo(memHdc, j, bottom);
+				MoveToEx(hDCTabLoggerPanel, j, top, NULL);
+				LineTo(hDCTabLoggerPanel, j, bottom);
 				trlogtempsec = ((((iHscrollMax - iHscrollPos) * tracerzoom) * tracerlayout->timestep + right - j) / tracerlayout->timestep);
 				trlogtime = ((CIF_KLOK[_CIF_UUR] * 3600) + (CIF_KLOK[_CIF_MINUUT] * 60) + CIF_KLOK[_CIF_SECONDE]) - (trlogtempsec / 10);
 				trlogtempsec = CIF_KLOK[_CIF_SECONDE];
 				sprintf_s(trlogtimestamp, SZBUFFERSIZE, "%2.2d:%2.2d:%2.2d", trlogtime / 3600, (trlogtime % 3600) / 60, (trlogtime % 3600) % 60);
-				SetBkMode(memHdc, TRANSPARENT);
-				TextOut(memHdc, j, top, trlogtimestamp, strlen(trlogtimestamp));
-				SetBkMode(memHdc, OPAQUE);
+				SetBkMode(hDCTabLoggerPanel, TRANSPARENT);
+				TextOut(hDCTabLoggerPanel, j, top, trlogtimestamp, strlen(trlogtimestamp));
+				SetBkMode(hDCTabLoggerPanel, OPAQUE);
 			}
 		}
 		else if (tracerzoom == tracerzoom_SEC)
 		{
-			for (int j = ((((iHscrollMax - iHscrollPos) * tracerzoom) * tracerlayout->timestep) / 10) + right - tracerlayout->pad_right - (CIF_KLOK[_CIF_SECONDE] % tracerlayout->timeline) * tracerlayout->timestep;
-				j > left + tracerlayout->pad_left;
+			for (int j = ((((iHscrollMax - iHscrollPos) * tracerzoom) * tracerlayout->timestep) / 10) + right - (CIF_KLOK[_CIF_SECONDE] % tracerlayout->timeline) * tracerlayout->timestep;
+				j > left - (tracerlayout->timestep * tracerlayout->timeline);
 				j -= tracerlayout->timestep * tracerlayout->timeline)
 			{
-				MoveToEx(memHdc, j, top + tracerlayout->pad_top, NULL);
-				LineTo(memHdc, j, bottom);
-				trlogtempsec = (((((iHscrollMax - iHscrollPos) * tracerzoom) * tracerlayout->timestep) / 10) + right - tracerlayout->pad_right - j) / tracerlayout->timestep;
+				MoveToEx(hDCTabLoggerPanel, j, top + tracerlayout->pad_top, NULL);
+				LineTo(hDCTabLoggerPanel, j, bottom);
+				trlogtempsec = (((((iHscrollMax - iHscrollPos) * tracerzoom) * tracerlayout->timestep) / 10) + right - j) / tracerlayout->timestep;
 				trlogtime = ((CIF_KLOK[_CIF_UUR] * 3600) + (CIF_KLOK[_CIF_MINUUT] * 60) + CIF_KLOK[_CIF_SECONDE]) - trlogtempsec;
 				trlogtempsec = CIF_KLOK[_CIF_SECONDE];
 				sprintf_s(trlogtimestamp, SZBUFFERSIZE, "%2.2d:%2.2d:%2.2d", trlogtime / 3600, (trlogtime % 3600) / 60, (trlogtime % 3600) % 60);
-				SetBkMode(memHdc, TRANSPARENT);
-				TextOut(memHdc, j, top, trlogtimestamp, strlen(trlogtimestamp));
-				SetBkMode(memHdc, OPAQUE);
+				SetBkMode(hDCTabLoggerPanel, TRANSPARENT);
+				TextOut(hDCTabLoggerPanel, j, top, trlogtimestamp, strlen(trlogtimestamp));
+				SetBkMode(hDCTabLoggerPanel, OPAQUE);
 			}
 		}
 
 		BeginPaint(hWnd, &ps);
-		BitBlt(hdc, 0, 0, iTracerLogRight - iTracerLogLeft, iTracerLogBottom - iTracerLogTop, memHdc, 0, 0, SRCCOPY);
+		BitBlt(hdc, 0, 0, iTracerLogRight - iTracerLogLeft, iTracerLogBottom - iTracerLogTop, hDCTabLoggerPanel, 0, 0, SRCCOPY);
 		EndPaint(hWnd, &ps);
 		ReleaseDC(hWnd, hdc);
 		return 0;
 	}
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 void tabDebugTracer_paint_trace(HDC hDC, INT trace, INT left, INT top, INT right, INT bottom)
@@ -192,10 +196,10 @@ void tabDebugTracer_paint_trace(HDC hDC, INT trace, INT left, INT top, INT right
 	int cg_stat_tmp = -1, cg_pos_tmp = -1;
 	int rs_stat_tmp = -1, rs_pos_tmp = -1;
 	for (ii = tracerzoom, i = trindex - tracerzoom - ((iHscrollMax - iHscrollPos) * tracerzoom), // -  tmp_zoomofset,			// i: toegang tot juiste plek in buffer: index minus huidige positie tov max
-		j = right - tracerlayout->pad_right,					// j: plek op het scherm: start is rechts gecorrigeerd voor de padding
+		j = right,					// j: plek op het scherm: start is rechts gecorrigeerd voor de padding
 		cg_pos_tmp = j,
 		rs_pos_tmp = j;			// tijdelijke positie variabelen gelijk aan startpositie
-		j > left + tracerlayout->pad_left && (ii + tracerzoom) < TRACERBUFFERSIZE; ii += tracerzoom)// voorwaarde: plek op scherm pas nog binnen het tekenvlak voor de log
+		j > left && (ii + tracerzoom) < TRACERBUFFERSIZE; ii += tracerzoom)// voorwaarde: plek op scherm pas nog binnen het tekenvlak voor de log
 	{
 		/* Index binnen max houden */
 		if (i < 0) i = ((i + TRACERBUFFERSIZE) % TRACERBUFFERSIZE);
@@ -214,7 +218,7 @@ void tabDebugTracer_paint_trace(HDC hDC, INT trace, INT left, INT top, INT right
 		}
 		i = (((i - tracerzoom) + TRACERBUFFERSIZE) % TRACERBUFFERSIZE);
 		/* Zolang het past binnen het tekenvlak, en er zijn geen wijzigingen in de status, teruglezen in de log */
-		while (((j -= tracerlayout->timestep)) > (left + tracerlayout->pad_left) &&
+		while (((j -= tracerlayout->timestep)) > (left) &&
 			tracer[trace]->log[i][0] == cg_stat_tmp && tracer[trace]->log[i][1] == rs_stat_tmp
 			&& (ii + tracerzoom) < TRACERBUFFERSIZE)
 		{
@@ -223,10 +227,10 @@ void tabDebugTracer_paint_trace(HDC hDC, INT trace, INT left, INT top, INT right
 		}
 		/* Indien er een wijziging is in de status, schilderen van de status tot nu toe.
 			Indien het niet meer past, schilderen restant */
-		if ((tracer[trace]->log[i][0] != cg_stat_tmp) || (j - tracerlayout->timestep < tracerlayout->pad_left + left) || (ii + tracerzoom) >= TRACERBUFFERSIZE)
+		if ((tracer[trace]->log[i][0] != cg_stat_tmp) || (j - tracerlayout->timestep < left) || (ii + tracerzoom) >= TRACERBUFFERSIZE)
 		{
-			if (j - tracerlayout->timestep < tracerlayout->pad_left + left)
-				j = tracerlayout->pad_left + left;
+			if (j - tracerlayout->timestep < left)
+				j = left;
 
 			switch (tracer[trace]->type)
 			{
@@ -266,10 +270,10 @@ void tabDebugTracer_paint_trace(HDC hDC, INT trace, INT left, INT top, INT right
 		}
 		/* Indien er een wijziging is in de realisatiestatus schilederen van de status tot nu toe.
 			Indien het niet past, schilderen van restant */
-		if ((tracer[trace]->log[i][1] != rs_stat_tmp) || (j - tracerlayout->timestep < tracerlayout->pad_left + left) || (ii + tracerzoom) >= TRACERBUFFERSIZE)
+		if ((tracer[trace]->log[i][1] != rs_stat_tmp) || (j - tracerlayout->timestep < left) || (ii + tracerzoom) >= TRACERBUFFERSIZE)
 		{
-			if (j - tracerlayout->timestep < tracerlayout->pad_left + left)
-				j = tracerlayout->pad_left + left;
+			if (j - tracerlayout->timestep < left)
+				j = left;
 			SelectObject(hDC, hBrushMirakel[BRUSH_LIGHTGRAY]);
 			SelectObject(hDC, hPenMirakel[BRUSH_LIGHTGRAY]);
 			switch (tracer[trace]->type)
@@ -322,38 +326,6 @@ void tabDebugTracer_paint_trace(HDC hDC, INT trace, INT left, INT top, INT right
 			}
 		}
 	}
-	/* Weergeven labels */
-	//TextOut(hDC, left + mir_i_char_w + 20, log_pad_top_tmp + tracerlayout->fc_height / 15, FC_code[_fc], min(6, strlen(FC_code[_fc])));
-	int labelwidth = 50;
-	SetBkMode(hDC, TRANSPARENT);
-	switch (tracer[trace]->type)
-	{
-	case Fase:
-		TextOut(hDC, right - labelwidth, log_pad_top_tmp + tracerlayout->fc_height / 5 - 1, FC_code[tracer[trace]->elem], min(10, strlen(FC_code[tracer[trace]->elem])));
-		break;
-	case Detector:
-		TextOut(hDC, right - labelwidth, log_pad_top_tmp + tracerlayout->fc_height / 5 - 1, D_code[tracer[trace]->elem], min(10, strlen(D_code[tracer[trace]->elem])));
-		break;
-	case Counter:
-		TextOut(hDC, right - labelwidth, log_pad_top_tmp + tracerlayout->fc_height / 5 - 1, C_code[tracer[trace]->elem], min(10, strlen(C_code[tracer[trace]->elem])));
-		break;
-	case Timer:
-		TextOut(hDC, right - labelwidth, log_pad_top_tmp + tracerlayout->fc_height / 5 - 1, T_code[tracer[trace]->elem], min(10, strlen(T_code[tracer[trace]->elem])));
-		break;
-	case Hulpelement:
-		TextOut(hDC, right - labelwidth, log_pad_top_tmp + tracerlayout->fc_height / 5 - 1, H_code[tracer[trace]->elem], min(10, strlen(H_code[tracer[trace]->elem])));
-		break;
-	case Ingang:
-		TextOut(hDC, right - labelwidth, log_pad_top_tmp + tracerlayout->fc_height / 5 - 1, IS_code[tracer[trace]->elem], min(10, strlen(IS_code[tracer[trace]->elem])));
-		break;
-	case Uitgang:
-		TextOut(hDC, right - labelwidth, log_pad_top_tmp + tracerlayout->fc_height / 5 - 1, US_code[tracer[trace]->elem], min(10, strlen(US_code[tracer[trace]->elem])));
-		break;
-	case Memoryelem:
-		TextOut(hDC, right - labelwidth, log_pad_top_tmp + tracerlayout->fc_height / 5 - 1, MM_code[tracer[trace]->elem], min(10, strlen(MM_code[tracer[trace]->elem])));
-		break;
-	default:
-		break;
-	}
+	
 	SetBkMode(hDC, OPAQUE);
 }
