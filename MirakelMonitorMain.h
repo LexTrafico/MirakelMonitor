@@ -20,7 +20,9 @@
 #include "TabHelpElements.h"
 #ifdef EXTRAMON
     #include "TabTracerLog.h"
+#ifndef NOPARSER
     #include "TabParserPlus.h"
+#endif
     //#include "TabFasenlog.h"
 #endif
 
@@ -33,9 +35,13 @@
 #define TAB_HELPELEMS   6
 #ifdef EXTRAMON
 	#define TAB_TRACERLOG   7
+  #ifndef NOPARSER
 	#define TAB_PARSERPLUS  8
 	//#define TAB_FASENLOG    3
 	#define TAB_MAX         9
+  #else
+	#define TAB_MAX         8
+  #endif
 #else
 	#define TAB_MAX         7
 #endif
@@ -66,7 +72,9 @@ const char * TAB_MAIN_TITLE[TAB_MAX] =
 	"HE",
 #ifdef EXTRAMON
 	"Trace",
+#ifndef NOPARSER
 	"Parser",
+#endif
 	//"Log",
 #endif
 };

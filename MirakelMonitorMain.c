@@ -164,7 +164,7 @@ int MirakelMonitor_init(char * lpWindowName)
 
 	int e = RegisterMirakelMonitorClass(hMainInstance);
 
-	sprintf_s(name, 128, "Mirakel monitor 2.0 - %s", lpWindowName);
+	sprintf_s(name, 128, "Mirakel monitor 2.0 LT - %s", lpWindowName);
 	hMainWin = CreateWindow(
 		CLASS_NAME,                     // Window class
 		name,                           // Window text
@@ -204,7 +204,9 @@ int MirakelMonitor_init(char * lpWindowName)
 	hTabs[TAB_HELPELEMS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabHelpElemsClass", (WNDPROC)WindowProcTabHelpElements);
 #ifdef EXTRAMON
 	hTabs[TAB_TRACERLOG] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabTracerLogClass", (WNDPROC)WindowProcTabTracerLog);
+#ifndef NOPARSER
 	hTabs[TAB_PARSERPLUS] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabParserPlusClass", (WNDPROC)WindowProcTabParserPlus);
+#endif
 	//hTabs[TAB_FASENLOG] = CreateTabDisplayWindow(hMainTab, hMainInstance, "MirakelTabFasenlogClass", (WNDPROC)WindowProcTabFasenlog);
 #endif
 	
@@ -262,7 +264,9 @@ void MirakelMonitor()
 	TabWachttijdenUpdate();
 #ifdef EXTRAMON
 	TabTracerLogUpdate();
+#ifndef NOPARSER
 	TabParserPlusUpdate();
+#endif
 #endif
 	++update_monitor;
 	if (update_monitor == 10) update_monitor = 0;
